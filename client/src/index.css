@@ -1,0 +1,12 @@
+#code-editor {
+  background-color: blue;
+  color: aliceblue;
+  cursor: auto;
+  caret-color: tomato;
+}
+#output-box {
+  background-color: grey;
+  color: aliceblue;
+  cursor: cell;
+  caret-color: tomato;
+}
