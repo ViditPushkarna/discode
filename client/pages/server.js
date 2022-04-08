@@ -1,6 +1,7 @@
 import styles from '../styles/Server.module.css'
 import Channel from '../components/tiles/channel'
 import Server from '../components/tiles/server'
+import Message from '../components/chat/message'
 
 export default function Home() {
   return (
@@ -19,13 +20,15 @@ export default function Home() {
 
       <div className="row2">
         <div className="free"></div>
-        <div className="maindiv">
-            <div className="chatBox">
-                <div className="inputBox">
-                    <input spellcheck="false"/>
-                    <button>Send</button>
-                </div>
-            </div>
+        <div className="maindiv">\
+          <Message/>
+          
+          <div className="chatBox">
+              <div className="inputBox">
+                  <input spellCheck="false"/>
+                  <button>Send</button>
+              </div>
+          </div>
         </div>
 
       </div>

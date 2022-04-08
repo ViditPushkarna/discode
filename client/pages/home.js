@@ -32,6 +32,9 @@ export default function Home() {
           <Server/>
           <Server/>
           <Server/>
+          <div className={styles.createServer}>
+            
+          </div>
         </div>
       </div>
     </div>
