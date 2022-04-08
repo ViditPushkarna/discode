@@ -15,10 +15,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    channels: [
+    servers: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Channel",
+        ref: "Server",
       },
     ],
   },

@@ -9,7 +9,6 @@ const channelSchema = new mongoose.Schema(
     members: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        isAdmin: Boolean,
         ref: "Users",
       },
     ],
@@ -19,6 +18,10 @@ const channelSchema = new mongoose.Schema(
         ref: "Messages",
       },
     ],
+    server: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Server",
+    },
   },
   {
     timestamps: true,

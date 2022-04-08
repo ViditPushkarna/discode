@@ -1,0 +1,35 @@
+import mongoose from "mongoose";
+
+const serverSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    channels: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Channel",
+      },
+    ],
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+      },
+    ],
+    admin: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const Server = mongoose.model("Server", serverSchema);
+
+export default Server;

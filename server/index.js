@@ -8,7 +8,7 @@ const app = express();
 
 // connect to database
 import db from "./config/mongoose.js";
-console.log(db);
+// console.log(db);
 
 app.use(bodyParser.json({ limit: "20mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "20mb", extended: true }));
