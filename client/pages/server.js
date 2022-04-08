@@ -20,7 +20,7 @@ export default function Home() {
 
       <div className="row2">
         <div className="free"></div>
-        <div className="maindiv">\
+        <div className="maindiv">
           <Message/>
           
           <div className="chatBox">
