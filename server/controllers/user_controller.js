@@ -18,10 +18,7 @@ export const createUser = async function (req, res) {
     res.send({
       success: true,
       message: "User Created Successfully",
-      user: {
-        id: user._id,
-        user_email: user.email,
-      },
+      user: user,
     });
   } catch (err) {
     res.status(404);
