@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import styles from '../styles/Home.module.css'
 import Channel from '../components/tiles/channel'
 import Server from '../components/tiles/server'
@@ -6,7 +6,7 @@ import CreateServerPopup from '../components/popUp/createServer'
 
 export default function Home() {
   const [createServer, setCreateServerPopup] = useState(false)
-  
+
   return (
     <>
     {createServer ? <CreateServerPopup setView={setCreateServerPopup}/> : null}
