@@ -1,0 +1,40 @@
+.container {
+    position: fixed;
+    display: flex;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.popUp {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 30vw;
+    height: 50vh;
+    border-radius: 1rem;
+    z-index: 1;
+    background: #01081E;
+}
+
+.cancel {
+    margin: 1vh 1vh 0 auto;
+    cursor: pointer;
+    height: 4vh;
+}
+
+.input {
+    border: none;
+    outline: none;
+    margin: 10vh auto 0 auto;
+    font-size: 1.5rem;
+    width: 20vw;
+}
+
+.button {
+    margin: 10vh auto 0 auto;
+    font-size: 1.2rem;
+    cursor: pointer;
+
+}
