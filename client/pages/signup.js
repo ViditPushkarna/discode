@@ -45,13 +45,10 @@ export default function Dashboard() {
 
     const token = localStorage.getItem('token')
 
-    axios.post("http://192.168.1.40:5000/user/login", req, {
-      headers: {
-        "Authorization": token
-      }
-    }).then(res => {
+    axios.post("http://192.168.1.40:5000/user/login", req).then(res => {
       if (res.data.success) {
         localStorage.setItem("user", JSON.stringify(res.data.user))
+        localStorage.setItem("token", res.data.token)
 
         Router.push('/home')
       } else throw res.data.message
