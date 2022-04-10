@@ -1,7 +1,28 @@
+.message_box {
+  margin: auto 0 auto 0;
+  background-color: transparent;
+  bottom: 0mm;
+  display: flex;
+}
+.username {
+  color: aliceblue;
+  margin-left: 1rem;
+  text-align: center;
+  padding: 0;
+}
+.message_box:hover {
+  background-color: rgb(9, 9, 22);
+}
 
-.message_box{
-    margin: auto 0 auto 0;
-    background-color: grey;
-    border: 0.1mm black solid;
-    bottom: 0mm;
+.profile {
+  display: flex;
+}
+.profile_picture {
+  width: 40px;
+  border-radius: 50%;
+  margin: auto 0 auto 1vw;
+}
+
+.message_div {
+  color: aliceblue;
 }

@@ -1,18 +1,17 @@
-import styles from '../../../styles/Server.module.css'
+import styles from "../../../styles/Server.module.css";
+import Channel from "../../../components/tiles/channel";
+import Server from "../../../components/tiles/server";
+import Message from "../../../components/chat/message";
 
-import Channel from '../../../components/tiles/channel'
-import Server from '../../../components/tiles/server'
-import Message from '../../../components/chat/message'
-import { useRouter } from 'next/router'
-
-export default function Func() {
-  const router = useRouter()
-  const ids = router.query
-
+export default function Home() {
   return (
     <div className="page">
       <div className="row1">
         <div className="channel">
+          <div className={styles.servername}>
+            <h4>Server Name</h4>
+          </div>
+
           <Channel />
           <Channel />
           <Channel />
@@ -23,6 +22,9 @@ export default function Func() {
       <div className="row2">
         <div className="free"></div>
         <div className="maindiv">
+          <Message />
+          <Message />
+          <Message />
           <Message/>
           
           <div className="chatBox">
