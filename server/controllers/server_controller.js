@@ -1,5 +1,6 @@
 import Server from "../model/Server.js";
 import User from "../model/User.js";
+import Channels from "../model/Channel.js";
 
 export const home = function (req, res) {
   res.send("Server Controller is Working");
@@ -119,7 +120,7 @@ export const addMember = async function (req, res) {
       server: server,
     });
   } catch (err) {
-    return res.status(401).send({
+    return res.status(404).send({
       success: false,
       message: `Bhai error aara : ${err}`,
     });
@@ -134,5 +135,31 @@ export const kickMember = async function (req, res) {
     // remove server from user server list
   } catch (err) {
     res.send("Error", err);
+  }
+};
+
+export const serverInfo = async function (req, res) {
+  try {
+    let server = await Server.findById(req.body.server_id);
+    var channels = [];
+    for (let chid of server.channels) {
+      let channel = await Channels.findById(chid);
+      channels.push({
+        channel_id: channel._id,
+        channel_name: channel.name,
+      });
+    }
+    // server.channels.forEach((chid) => {
+    // });
+    return res.status(201).send({
+      success: true,
+      message: `Le bhai tera Server details of ${server.name}`,
+      channels: channels,
+    });
+  } catch (err) {
+    return res.status(404).send({
+      success: false,
+      message: `Bhai error aara : ${err}`,
+    });
   }
 };
