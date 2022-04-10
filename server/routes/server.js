@@ -10,6 +10,7 @@ import {
   removeAdmin,
   addMember,
   kickMember,
+  serverInfo,
 } from "../controllers/server_controller.js";
 console.log("Server Router loaded");
 
@@ -30,6 +31,11 @@ router.post(
   "/addMember",
   passport.authenticate("jwt", { session: false }),
   addMember
+);
+router.post(
+  "/serverInfo",
+  passport.authenticate("jwt", { session: false }),
+  serverInfo
 );
 router.post("/kickMember", kickMember);
 // for any further routes, access from here

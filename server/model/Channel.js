@@ -5,12 +5,6 @@ const channelSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  members: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
-    },
-  ],
   messages: [
     {
       type: mongoose.Schema.Types.ObjectId,

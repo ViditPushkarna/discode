@@ -38,17 +38,26 @@ export const createUser = async function (req, res) {
 // working
 export const userInfo = async function (req, res) {
   try {
-    let user = await User.findOne({ email: req.body.user_email });
+    let user = await User.findById(req.body.user_id);
     if (!user) {
       return res.status(401).send({
         success: false,
         message: "Could not find the user",
       });
     }
+    var servers = [];
+    for (let sid of user.servers) {
+      let server = await Server.findById(sid);
+      servers.push({
+        server_id: server._id,
+        server_name: server.name,
+      });
+    }
     res.status(200).send({
       success: true,
       message: "Le bhai apna user",
-      user: user,
+      user_name: user.name,
+      servers: servers,
     });
     // console.log(user);
     // res.send(user);
