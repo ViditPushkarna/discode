@@ -1,4 +1,6 @@
 import express from "express";
+import passport from "passport";
+import "../config/passport.js";
 const router = express.Router();
 import {
   home,
@@ -12,11 +14,23 @@ import {
 console.log("Server Router loaded");
 
 router.get("/", home);
-router.post("/createServer", createServer);
-router.post("/deleteServer", deleteServer);
+router.post(
+  "/createServer",
+  passport.authenticate("jwt", { session: false }),
+  createServer
+);
+router.post(
+  "/deleteServer",
+  passport.authenticate("jwt", { session: false }),
+  deleteServer
+);
 router.post("/makeAdmin", makeAdmin);
 router.post("/removeAdmin", removeAdmin);
-router.post("/addMember", addMember);
+router.post(
+  "/addMember",
+  passport.authenticate("jwt", { session: false }),
+  addMember
+);
 router.post("/kickMember", kickMember);
 // for any further routes, access from here
 // router.use('/routerName', require('./route'));

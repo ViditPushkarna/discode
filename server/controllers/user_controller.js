@@ -13,16 +13,24 @@ export const createUser = async function (req, res) {
       email: req.body.user_email,
       password: req.body.user_password,
     });
-    // console.log(user._id);
-    res.status(200);
-    res.send({
+    const payload = {
+      user_email: user.email,
+      id: user._id,
+    };
+
+    const token = jwt.sign(payload, "Random Alina", { expiresIn: "1d" });
+
+    return res.status(201).send({
       success: true,
-      message: "User Created Successfully",
+      message: "Sign up Page Successfully",
+      token: "Bearer " + token,
       user: user,
     });
   } catch (err) {
-    res.status(404);
-    res.send(`Bhai error aara : ${err}`);
+    return res.status(404).send({
+      success: false,
+      message: `Bhai error aara : ${err}`,
+    });
     // res.send("Error", err);
   }
 };
@@ -31,6 +39,12 @@ export const createUser = async function (req, res) {
 export const userInfo = async function (req, res) {
   try {
     let user = await User.findOne({ email: req.body.user_email });
+    if (!user) {
+      return res.status(401).send({
+        success: false,
+        message: "Could not find the user",
+      });
+    }
     res.status(200).send({
       success: true,
       message: "Le bhai apna user",
@@ -40,7 +54,7 @@ export const userInfo = async function (req, res) {
     // res.send(user);
   } catch (err) {
     res.status(404);
-    console.log(err);
+    // console.log(err);
     res.send(`Bhai error aara : ${err}`);
   }
 };
@@ -74,9 +88,12 @@ export const login = async function (req, res) {
       success: true,
       message: "Logged In Successfully",
       token: "Bearer " + token,
+      user: user,
     });
   } catch (err) {
-    res.status(404);
-    res.send(`Bhai error aara : ${err}`);
+    return res.status(401).send({
+      success: false,
+      message: `Bhai error aara : ${err}`,
+    });
   }
 };
