@@ -4,8 +4,39 @@ import Channel from "../components/tiles/channel";
 import CreateServerPopup from "../components/popUp/createServer";
 import Member from "../components/tiles/member";
 import Server from "../components/tiles/server";
+import axios from 'axios'
+
 export default function Home() {
-  const [createServer, setCreateServerPopup] = useState(false);
+  const [createServer, setCreateServerPopup] = useState(false)
+  const [serverlist, setserverlist] = useState([])
+
+  const getServers = () => {
+    const user = JSON.parse(localStorage.getItem('user'))
+    const req = {
+      user_id: user._id
+    }
+
+    const token = localStorage.getItem('token')
+
+    axios.post("http://192.168.1.40:5000/user/userInfo", req, {
+      headers: {
+        "Authorization": token
+      }
+    }).then(res => {
+      if (res.data.success) {
+        localStorage.setItem('serverList', JSON.stringify(res.data.servers))
+        setserverlist(res.data.servers)
+        console.log(res.data.servers)
+      } else throw res.data.message
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+
+  useEffect(() => {
+    getServers()
+  }, [])
+
   return (
     <>
       {createServer ? (
@@ -31,12 +62,10 @@ export default function Home() {
         </div>
         <div className="row3">
           <div className="sidestick">
-            <Server />
-            <Server />
-            <Server />
-            <Server />
-            <Server />
-            <Server />
+            {serverlist.map(s => {
+              return <Server id={s.server_id} name={s.server_name}/>
+            })}
+
             <div
               className={styles.createServer}
               onClick={() => setCreateServerPopup(true)}
