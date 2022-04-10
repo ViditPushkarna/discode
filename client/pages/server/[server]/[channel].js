@@ -1,9 +1,3 @@
-<<<<<<< HEAD:client/pages/server.js
-import styles from "../styles/Server.module.css";
-import Channel from "../components/tiles/channel";
-import Server from "../components/tiles/server";
-import Message from "../components/chat/message";
-=======
 import styles from '../../../styles/Server.module.css'
 
 import Channel from '../../../components/tiles/channel'
@@ -14,7 +8,6 @@ import { useRouter } from 'next/router'
 export default function Func() {
   const router = useRouter()
   const ids = router.query
->>>>>>> main:client/pages/server/[server]/[channel].js
 
   return (
     <div className="page">
@@ -30,14 +23,8 @@ export default function Func() {
       <div className="row2">
         <div className="free"></div>
         <div className="maindiv">
-<<<<<<< HEAD:client/pages/server.js
-          <Message />
-          <Message />
-          <Message />
-=======
           <Message/>
           
->>>>>>> main:client/pages/server/[server]/[channel].js
           <div className="chatBox">
             <div className="inputBox">
               <input spellCheck="false" />

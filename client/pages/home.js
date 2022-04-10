@@ -4,13 +4,17 @@ import Channel from '../components/tiles/channel'
 import Server from '../components/tiles/server'
 import CreateServerPopup from '../components/popUp/createServer'
 
+
 export default function Home() {
   const [createServer, setCreateServerPopup] = useState(false)
+
+  const click = () => {
+
+  }
 
   return (
     <>
     {createServer ? <CreateServerPopup setView={setCreateServerPopup}/> : null}
-    
 
       <div className="page">
         <div className="row1">
