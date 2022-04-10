@@ -11,6 +11,7 @@ export default function Home() {
           <div className={styles.servername}>
             <h4>Server Name</h4>
           </div>
+
           <Channel />
           <Channel />
           <Channel />
@@ -24,6 +25,8 @@ export default function Home() {
           <Message />
           <Message />
           <Message />
+          <Message/>
+          
           <div className="chatBox">
             <div className="inputBox">
               <input spellCheck="false" />

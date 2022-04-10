@@ -1,11 +1,11 @@
-import styles from "../../styles/popup/CreateServer.module.css";
-import { useState } from "react";
+import styles from "../../styles/popup/CreateServer.module.css"
+import { useState } from "react"
+import axios from "axios"
+import Router from 'next/router'
 
 export default function createServer(props) {
   const { setView } = props;
   const [name, setName] = useState("");
-
-  const click = () => {};
 
   return (
     <div className={styles.container}>
@@ -16,7 +16,6 @@ export default function createServer(props) {
           onClick={() => setView(false)}
         />
         <input
-          placeholder="Paste server link"
           className={styles.input}
           value={name}
           spellCheck="false"
