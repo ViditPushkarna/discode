@@ -1,13 +1,16 @@
-import styles from "../styles/Server.module.css";
-import Channel from "../components/tiles/channel";
-import Server from "../components/tiles/server";
-import Message from "../components/chat/message";
+import styles from "../../../styles/Server.module.css";
+import Channel from "../../../components/tiles/channel";
+import Server from "../../../components/tiles/server";
+import Message from "../../../components/chat/message";
 
 export default function Home() {
   return (
     <div className="page">
       <div className="row1">
         <div className="channel">
+          <div className={styles.servername}>
+            <h4>Server Name</h4>
+          </div>
           <Channel />
           <Channel />
           <Channel />

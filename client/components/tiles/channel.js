@@ -1,10 +1,9 @@
-import styles from '../../styles/tiles/Channel.module.css'
+import styles from "../../styles/tiles/Channel.module.css";
 
 export default function channelTab(props) {
-
-   return (
+  return (
     <div className={styles.container}>
-      channelTab
+      <h5>#Channel Name</h5>
     </div>
-  )
+  );
 }
