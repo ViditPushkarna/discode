@@ -1,0 +1,9 @@
+.createServer {
+    height: 9vh;
+    width: 4vw;
+    margin: 2vh auto 0 auto;
+    border: 2px solid black;
+    border-radius: 100vh;
+    background: green;
+    cursor: pointer;
+}
