@@ -11,4 +11,4 @@ export const iofunc = (io) => {
       console.log(`User disconnected : ${socket.id}`);
     });
   });
-
+};
