@@ -3,13 +3,15 @@ import styles from '../../../styles/Server.module.css'
 import Channel from '../../../components/tiles/channel'
 import Server from '../../../components/tiles/server'
 import Message from '../../../components/chat/message'
+import CreateChannel from '../../../components/popup/createChannel'
 import axios from 'axios'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 
 export default function Func() {
   const router = useRouter()
   const ids = router.query
 
+  const [createChannelPopup, setCreateChannelPopup] = useState(false)
   const [channellist, setchannellist] = useState([])
   const [serverlist, setserverlist] = useState([])
 
@@ -33,6 +35,33 @@ export default function Func() {
       } else throw res.data.message
     }).catch(err => {
       console.log(err)
+      if (err.response && err.response.data === "Unauthorized") Router.push('/signup')
+    })
+  }
+
+  const getChannels = () => {
+    const req = {
+      server_id: ids.server
+    }
+
+    const token = localStorage.getItem('token')
+
+    axios.post("http://192.168.1.40:5000/server/serverInfo", req, {
+      headers: {
+        "Authorization": token
+      }
+    }).then(res => {
+      if (res.data.success) {
+        localStorage.setItem('channelList', JSON.stringify({
+          server: ids.server,
+          channelList: res.data.channels
+        }))
+
+        setchannellist(res.data.channels)
+      } else throw res.data.message
+    }).catch(err => {
+      console.log(err)
+      if (err.response && err.response.data === "Unauthorized") Router.push('/signup')
     })
   }
 
@@ -46,62 +75,54 @@ export default function Func() {
   useEffect(() => {
     if (ids === undefined) return
 
-    const req = {
-      server_id: ids.server
-    }
-
-    const token = localStorage.getItem('token')
-
-    axios.post("http://192.168.1.40:5000/server/serverInfo", req, {
-      headers: {
-        "Authorization": token
-      }
-    }).then(res => {
-      if (res.data.success) {
-        localStorage.setItem('channelList', JSON.stringify(res.data.channels))
-        setchannellist(res.data.channels)
-      } else throw res.data.message
-    }).catch(err => {
-      console.log(err)
-    })
+    const c = localStorage.getItem('channelList')
+    console.log(c)
+    if (c && c.server === ids.server && c.channelList) setchannellist(c.channelList)
+    else getChannels()
 
   }, [ids])
 
   return (
-    <div className="page">
-      <div className="row1">
-        <div className="channel">
-          {channellist.map(ch => {
-            return (<Channel id={ch.channel_id} name={ch.channel_name} server={ids.server} />)
-          })}
-        </div>
-        <div className="controller">
+    <>
+      {createChannelPopup ? (
+        <CreateChannel id={ids.server} setView={setCreateChannelPopup} />
+      ) : null}
 
-        </div>
-      </div>
+      <div className="page">
+        <div className="row1">
+          <div className="channel">
+            {channellist.map(ch => {
+              return (<Channel key={ch.channel_id} id={ch.channel_id} name={ch.channel_name} server={ids.server} />)
+            })}
+          </div>
+          <div className="controller">
 
-
-      <div className="row2">
-        <div className="free"></div>
-        <div className="maindiv">
-          <Message />
-
-          <div className="chatBox">
-            <div className="inputBox">
-              <input spellCheck="false" />
-              <button>Send</button>
-            </div>
           </div>
         </div>
 
-      </div>
-      <div className="row3">
-        <div className="sidestick">
-          {serverlist.map(s => {
-            return <Server id={s.server_id} name={s.server_name} />
-          })}
+
+        <div className="row2">
+          <div className="free"></div>
+          <div className="maindiv">
+            <Message />
+
+            <div className="chatBox">
+              <div className="inputBox">
+                <input spellCheck="false" />
+                <button>Send</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div className="row3">
+          <div className="sidestick">
+            {serverlist.map(s => {
+              return <Server id={s.server_id} name={s.server_name} />
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

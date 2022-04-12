@@ -5,6 +5,7 @@ import CreateServerPopup from "../components/popUp/createServer";
 import Member from "../components/tiles/member";
 import Server from "../components/tiles/server";
 import axios from 'axios'
+import Router from "next/router"
 
 export default function Home() {
   const [createServer, setCreateServerPopup] = useState(false)
@@ -26,10 +27,10 @@ export default function Home() {
       if (res.data.success) {
         localStorage.setItem('serverList', JSON.stringify(res.data.servers))
         setserverlist(res.data.servers)
-        console.log(res.data.servers)
       } else throw res.data.message
     }).catch(err => {
       console.log(err)
+      if (err.response && err.response.data === "Unauthorized") Router.push('/signup')
     })
   }
 
@@ -48,8 +49,6 @@ export default function Home() {
             <div className="active-head">
               <h4>Active Now</h4>
             </div>
-            <Channel></Channel>
-            <Channel></Channel>
           </div>
           <div className="controller">
             <div></div>
@@ -63,7 +62,7 @@ export default function Home() {
         <div className="row3">
           <div className="sidestick">
             {serverlist.map(s => {
-              return <Server id={s.server_id} name={s.server_name}/>
+              return <Server key={s.server_id} id={s.server_id} name={s.server_name}/>
             })}
 
             <div
