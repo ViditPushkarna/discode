@@ -4,9 +4,9 @@ import mongoose from "mongoose";
 
 // connect to database
 const CONNECTION_URL =
-  "mongodb+srv://baniaanamazi:madhav07@cluster0.eelpj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+  "mongodb+srv://devuser:LUUTObllsyzWQZ0u@cluster0.b6ved.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
-mongoose.connect("mongodb://localhost/discode_db"); // give any name to database
+mongoose.connect(CONNECTION_URL); // give any name to database
 
 // acquire connection (to check if it is successful)
 const db = mongoose.connection;
