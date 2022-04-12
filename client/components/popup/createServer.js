@@ -27,6 +27,7 @@ export default function createServer(props) {
       } else throw res.data.message
     }).catch(err => {
       console.log(err)
+      if (err.response && err.response.data === "Unauthorized") Router.push('/signup')
     })
   }
 

@@ -5,7 +5,7 @@ export default function channelTab(props) {
   const { id, name } = props
 
   return (
-    <div key={id} className={styles.container} onClick={() => {
+    <div className={styles.container} onClick={() => {
       router.push('/server/' + id)
     }}>
       {name}
