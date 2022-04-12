@@ -4,39 +4,43 @@ import Channel from "../components/tiles/channel";
 import CreateServerPopup from "../components/popUp/createServer";
 import Member from "../components/tiles/member";
 import Server from "../components/tiles/server";
-import axios from 'axios'
-import Router from "next/router"
+import axios from "axios";
+import Router from "next/router";
 
 export default function Home() {
-  const [createServer, setCreateServerPopup] = useState(false)
-  const [serverlist, setserverlist] = useState([])
+  const [createServer, setCreateServerPopup] = useState(false);
+  const [serverlist, setserverlist] = useState([]);
 
   const getServers = () => {
-    const user = JSON.parse(localStorage.getItem('user'))
+    const user = JSON.parse(localStorage.getItem("user"));
     const req = {
-      user_id: user._id
-    }
+      user_id: user._id,
+    };
 
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
 
-    axios.post("http://192.168.1.40:5000/user/userInfo", req, {
-      headers: {
-        "Authorization": token
-      }
-    }).then(res => {
-      if (res.data.success) {
-        localStorage.setItem('serverList', JSON.stringify(res.data.servers))
-        setserverlist(res.data.servers)
-      } else throw res.data.message
-    }).catch(err => {
-      console.log(err)
-      if (err.response && err.response.data === "Unauthorized") Router.push('/signup')
-    })
-  }
+    axios
+      .post("http://localhost:5000/user/userInfo", req, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          localStorage.setItem("serverList", JSON.stringify(res.data.servers));
+          setserverlist(res.data.servers);
+        } else throw res.data.message;
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response && err.response.data === "Unauthorized")
+          Router.push("/signup");
+      });
+  };
 
   useEffect(() => {
-    getServers()
-  }, [])
+    getServers();
+  }, []);
 
   return (
     <>
@@ -61,8 +65,14 @@ export default function Home() {
         </div>
         <div className="row3">
           <div className="sidestick">
-            {serverlist.map(s => {
-              return <Server key={s.server_id} id={s.server_id} name={s.server_name}/>
+            {serverlist.map((s) => {
+              return (
+                <Server
+                  key={s.server_id}
+                  id={s.server_id}
+                  name={s.server_name}
+                />
+              );
             })}
 
             <div

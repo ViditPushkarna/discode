@@ -4,32 +4,25 @@ import cors from "cors";
 import routes from "./routes/index.js";
 import http from "http";
 import { Server } from "socket.io";
+import { iofunc } from "./config/chat_sockets.js";
 
 // fire up the express app
 const app = express();
 
-// chatting
-const chatServer = http.createServer(app);
-import { chatSockets } from "./config/chat_sockets.js";
-const chat_sockets = chatSockets(chatServer);
-chatServer.listen(4000, () => {
-  console.log(`Chat server running on port : ${4000}`);
-});
+const PORT = 5000;
 
-const io = new Server(chatServer, {
+// chatting
+const server = http.Server(app);
+// import { chatSockets } from "./config/chat_sockets.js";
+
+const io = new Server(server, {
   cors: {
-    origin: ["*"],
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
 
-io.on("connection", (socket) => {
-  console.log(`User Connected : ${socket.id}`);
-
-  socket.on("disconnect", () => {
-    console.log(`User disconnected : ${socket.id}`);
-  });
-});
+iofunc(io);
 
 // connect to database
 import db from "./config/mongoose.js";
@@ -41,14 +34,12 @@ app.use(bodyParser.urlencoded({ limit: "20mb", extended: true }));
 
 app.use(cors());
 
-const PORT = 5000;
-
 app.use(passport.initialize());
 
 // use express router
 app.use("/", routes);
 
-app.listen(PORT, function (err) {
+server.listen(PORT, function (err) {
   if (err) {
     console.log("oh no no no no no");
     return;

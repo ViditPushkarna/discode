@@ -1,86 +1,97 @@
-import { useState, useEffect } from 'react'
-import styles from '../../../styles/Server.module.css'
-import Channel from '../../../components/tiles/channel'
-import Server from '../../../components/tiles/server'
-import Message from '../../../components/chat/message'
-import CreateChannel from '../../../components/popup/createChannel'
-import axios from 'axios'
-import Router, { useRouter } from 'next/router'
+import { useState, useEffect } from "react";
+import styles from "../../../styles/Server.module.css";
+import Channel from "../../../components/tiles/channel";
+import Server from "../../../components/tiles/server";
+import Message from "../../../components/chat/message";
+import CreateChannel from "../../../components/popup/createChannel";
+import axios from "axios";
+import Router, { useRouter } from "next/router";
 
 export default function Func() {
-  const router = useRouter()
-  const ids = router.query
+  const router = useRouter();
+  const ids = router.query;
 
-  const [createChannelPopup, setCreateChannelPopup] = useState(false)
-  const [channellist, setchannellist] = useState([])
-  const [serverlist, setserverlist] = useState([])
+  const [createChannelPopup, setCreateChannelPopup] = useState(false);
+  const [channellist, setchannellist] = useState([]);
+  const [serverlist, setserverlist] = useState([]);
 
   const getServers = () => {
-    const user = JSON.parse(localStorage.getItem('user'))
+    const user = JSON.parse(localStorage.getItem("user"));
     const req = {
-      user_id: user._id
-    }
+      user_id: user._id,
+    };
 
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
 
-    axios.post("http://192.168.1.40:5000/user/userInfo", req, {
-      headers: {
-        "Authorization": token
-      }
-    }).then(res => {
-      if (res.data.success) {
-        localStorage.setItem('serverList', JSON.stringify(res.data.servers))
-        setserverlist(res.data.servers)
-        console.log(res.data.servers)
-      } else throw res.data.message
-    }).catch(err => {
-      console.log(err)
-      if (err.response && err.response.data === "Unauthorized") Router.push('/signup')
-    })
-  }
+    axios
+      .post("http://localhost:5000/user/userInfo", req, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          localStorage.setItem("serverList", JSON.stringify(res.data.servers));
+          setserverlist(res.data.servers);
+          console.log(res.data.servers);
+        } else throw res.data.message;
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response && err.response.data === "Unauthorized")
+          Router.push("/signup");
+      });
+  };
 
   const getChannels = () => {
     const req = {
-      server_id: ids.server
-    }
+      server_id: ids.server,
+    };
 
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
 
-    axios.post("http://192.168.1.40:5000/server/serverInfo", req, {
-      headers: {
-        "Authorization": token
-      }
-    }).then(res => {
-      if (res.data.success) {
-        localStorage.setItem('channelList', JSON.stringify({
-          server: ids.server,
-          channelList: res.data.channels
-        }))
+    axios
+      .post("http://localhost:5000/server/serverInfo", req, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          localStorage.setItem(
+            "channelList",
+            JSON.stringify({
+              server: ids.server,
+              channelList: res.data.channels,
+            })
+          );
 
-        setchannellist(res.data.channels)
-      } else throw res.data.message
-    }).catch(err => {
-      console.log(err)
-      if (err.response && err.response.data === "Unauthorized") Router.push('/signup')
-    })
-  }
+          setchannellist(res.data.channels);
+        } else throw res.data.message;
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response && err.response.data === "Unauthorized")
+          Router.push("/signup");
+      });
+  };
 
   useEffect(() => {
-    const s = JSON.parse(localStorage.getItem('serverList'))
+    const s = JSON.parse(localStorage.getItem("serverList"));
 
-    if (s) setserverlist(s)
-    else getServers()
-  }, [])
+    if (s) setserverlist(s);
+    else getServers();
+  }, []);
 
   useEffect(() => {
-    if (ids === undefined) return
+    if (ids === undefined) return;
 
-    const c = localStorage.getItem('channelList')
-    console.log(c)
-    if (c && c.server === ids.server && c.channelList) setchannellist(c.channelList)
-    else getChannels()
-
-  }, [ids])
+    const c = localStorage.getItem("channelList");
+    console.log(c);
+    if (c && c.server === ids.server && c.channelList)
+      setchannellist(c.channelList);
+    else getChannels();
+  }, [ids]);
 
   return (
     <>
@@ -91,15 +102,19 @@ export default function Func() {
       <div className="page">
         <div className="row1">
           <div className="channel">
-            {channellist.map(ch => {
-              return (<Channel key={ch.channel_id} id={ch.channel_id} name={ch.channel_name} server={ids.server} />)
+            {channellist.map((ch) => {
+              return (
+                <Channel
+                  key={ch.channel_id}
+                  id={ch.channel_id}
+                  name={ch.channel_name}
+                  server={ids.server}
+                />
+              );
             })}
           </div>
-          <div className="controller">
-
-          </div>
+          <div className="controller"></div>
         </div>
-
 
         <div className="row2">
           <div className="free"></div>
@@ -113,16 +128,15 @@ export default function Func() {
               </div>
             </div>
           </div>
-
         </div>
         <div className="row3">
           <div className="sidestick">
-            {serverlist.map(s => {
-              return <Server id={s.server_id} name={s.server_name} />
+            {serverlist.map((s) => {
+              return <Server id={s.server_id} name={s.server_name} />;
             })}
           </div>
         </div>
       </div>
     </>
-  )
+  );
 }
