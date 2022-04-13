@@ -1,5 +1,6 @@
 import Channels from "../model/Channel.js";
 import Messages from "../model/Message.js";
+import Users from "../model/User.js";
 
 export const createMessage = async function (req, res) {
   try {
@@ -9,18 +10,35 @@ export const createMessage = async function (req, res) {
       channel: req.body.channel_id,
     });
     // console.log("reached 2");
-    await Channels.updateOne(
-      {
-        _id: req.body.channel_id,
-      },
-      {
-        $push: { Messages: message._id },
-      }
-    );
     return res.status(201).send({
       success: true,
-      message: "Channel successfully created",
+      message: "Message successfully created",
       message: message,
+    });
+  } catch (err) {
+    return res.status(404).send({
+      success: false,
+      message: `Bhai error aara : ${err}`,
+    });
+  }
+};
+
+export const fetchAllMess = async function (req, res) {
+  try {
+    let allMessages = await Messages.find({ channel: req.body.channel_id });
+    let allmess = [];
+    for (let message of allMessages) {
+      let sender = await Users.findById(message.sender).name;
+      allmess.push({
+        sender: sender,
+        message_id: message._id,
+        text: message.text,
+      });
+    }
+    return res.status(201).send({
+      success: true,
+      message: `Le bhai tere saare messages`,
+      messages: allmess,
     });
   } catch (err) {
     return res.status(404).send({
