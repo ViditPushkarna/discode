@@ -11,7 +11,7 @@ export default function Func() {
   const router = useRouter();
   const ids = router.query;
 
-  const [createChannelPopup, setCreateChannelPopup] = useState(false);
+  const [createChannelPopup, setCreateChannelPopup] = useState(true);
   const [channellist, setchannellist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
 

@@ -8,7 +8,7 @@ export default function channelTab(props) {
     <div className={styles.container} onClick={() => {
       router.push('/server/' + id)
     }}>
-      {name}
+      <p>{name[0]}</p>
     </div>
   )
 }
