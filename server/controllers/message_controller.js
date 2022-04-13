@@ -23,14 +23,28 @@ export const createMessage = async function (req, res) {
   }
 };
 
+export const createMessageio = async function (msg) {
+  try {
+    let message = await Messages.create({
+      sender: msg.sender_id,
+      text: msg.msg_data,
+      channel: msg.channel_id,
+    });
+    // console.log("reached 2");
+    return;
+  } catch (err) {
+    return;
+  }
+};
+
 export const fetchAllMess = async function (req, res) {
   try {
     let allMessages = await Messages.find({ channel: req.body.channel_id });
     let allmess = [];
     for (let message of allMessages) {
-      let sender = await Users.findById(message.sender).name;
+      let sender = await Users.findById(message.sender);
       allmess.push({
-        sender: sender,
+        sender_name: sender.name,
         message_id: message._id,
         text: message.text,
       });
