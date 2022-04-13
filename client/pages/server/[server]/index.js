@@ -7,11 +7,12 @@ import CreateChannel from "../../../components/popup/createChannel";
 import axios from "axios";
 import Router, { useRouter } from "next/router";
 
-export default function Func() {
-  const router = useRouter();
-  const ids = router.query;
 
-  const [createChannelPopup, setCreateChannelPopup] = useState(true);
+export default function Func() {
+  const router = useRouter()
+  const ids = router.query
+  
+  const [createChannelPopup, setCreateChannelPopup] = useState(false);
   const [channellist, setchannellist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
 
@@ -57,6 +58,7 @@ export default function Func() {
         },
       })
       .then((res) => {
+        console.log(res)
         if (res.data.success) {
           localStorage.setItem(
             "channelList",
@@ -84,10 +86,9 @@ export default function Func() {
   }, []);
 
   useEffect(() => {
-    if (ids === undefined) return;
+    if (ids.server === undefined) return;
 
     const c = localStorage.getItem("channelList");
-    console.log(c);
     if (c && c.server === ids.server && c.channelList)
       setchannellist(c.channelList);
     else getChannels();
@@ -112,6 +113,7 @@ export default function Func() {
                 />
               );
             })}
+            <p className={styles.addChannel} onClick={() => setCreateChannelPopup(true)}>Add+</p>
           </div>
           <div className="controller"></div>
         </div>
