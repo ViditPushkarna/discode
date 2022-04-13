@@ -1,25 +1,26 @@
-import { useState, useEffect } from "react";
-import styles from "../../../styles/Server.module.css";
-import Channel from "../../../components/tiles/channel";
-import Server from "../../../components/tiles/server";
-import Message from "../../../components/chat/message";
-import axios from "axios";
-import Router, { useRouter } from "next/router";
+import { useState, useEffect } from "react"
+import styles from "../../../styles/Server.module.css"
+import Channel from "../../../components/tiles/channel"
+import Server from "../../../components/tiles/server"
+import Message from "../../../components/chat/message"
+import axios from "axios"
+import Router, { useRouter } from "next/router"
 
 export default function Home() {
-  const router = useRouter();
-  const ids = router.query;
+  const router = useRouter()
+  const ids = router.query
 
-  const [channellist, setchannellist] = useState([]);
-  const [serverlist, setserverlist] = useState([]);
+  const [channellist, setchannellist] = useState([])
+  const [serverlist, setserverlist] = useState([])
+  const [messages, setmessages] = useState([])
 
-  const getServers = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
+  const getMessages = () => {
+    const user = JSON.parse(localStorage.getItem("user"))
     const req = {
       user_id: user._id,
-    };
+    }
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
 
     axios
       .post("http://localhost:5000/user/userInfo", req, {
@@ -29,24 +30,50 @@ export default function Home() {
       })
       .then((res) => {
         if (res.data.success) {
-          localStorage.setItem("serverList", JSON.stringify(res.data.servers));
-          setserverlist(res.data.servers);
-          console.log(res.data.servers);
-        } else throw res.data.message;
+          console.log(res.data.servers)
+        } else throw res.data.message
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err)
         if (err.response && err.response.data === "Unauthorized")
-          Router.push("/signup");
-      });
-  };
+          Router.push("/signup")
+      })
+  }
+
+  const getServers = () => {
+    const user = JSON.parse(localStorage.getItem("user"))
+    const req = {
+      user_id: user._id,
+    }
+
+    const token = localStorage.getItem("token")
+
+    axios
+      .post("http://localhost:5000/user/userInfo", req, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          localStorage.setItem("serverList", JSON.stringify(res.data.servers))
+          setserverlist(res.data.servers)
+          console.log(res.data.servers)
+        } else throw res.data.message
+      })
+      .catch((err) => {
+        console.log(err)
+        if (err.response && err.response.data === "Unauthorized")
+          Router.push("/signup")
+      })
+  }
 
   const getChannels = () => {
     const req = {
       server_id: ids.server,
-    };
+    }
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
 
     axios
       .post("http://localhost:5000/server/serverInfo", req, {
@@ -62,34 +89,36 @@ export default function Home() {
               server: ids.server,
               channelList: res.data.channels,
             })
-          );
+          )
 
-          setchannellist(res.data.channels);
-        } else throw res.data.message;
+          setchannellist(res.data.channels)
+        } else throw res.data.message
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err)
         if (err.response && err.response.data === "Unauthorized")
-          Router.push("/signup");
-      });
-  };
+          Router.push("/signup")
+      })
+  }
 
   useEffect(() => {
-    const s = JSON.parse(localStorage.getItem("serverList"));
+    const s = JSON.parse(localStorage.getItem("serverList"))
 
-    if (s) setserverlist(s);
-    else getServers();
-  }, []);
+    if (s) setserverlist(s)
+    else getServers()
+  }, [])
 
   useEffect(() => {
-    if (ids === undefined) return;
+    if (ids === undefined) return
 
-    const c = localStorage.getItem("channelList");
-    console.log(c);
+    const c = localStorage.getItem("channelList")
+    console.log(c)
     if (c && c.server === ids.server && c.channelList)
-      setchannellist(c.channelList);
-    else getChannels();
-  }, [ids]);
+      setchannellist(c.channelList)
+    else getChannels()
+
+    // getMessages()
+  }, [ids])
 
   return (
     <div className="page">
@@ -107,7 +136,7 @@ export default function Home() {
                 name={ch.channel_name}
                 server={ids.server}
               />
-            );
+            )
           })}
         </div>
         <div className="controller"></div>
@@ -116,10 +145,7 @@ export default function Home() {
       <div className="row2">
         <div className="free"></div>
         <div className="maindiv">
-          <Message />
-          <Message />
-          <Message />
-          <Message />
+          {messages.map(m => <Message />)}
 
           <div className="chatBox">
             <div className="inputBox">
@@ -132,10 +158,10 @@ export default function Home() {
       <div className="row3">
         <div className="sidestick">
           {serverlist.map((s) => {
-            return <Server id={s.server_id} name={s.server_name} />;
+            return <Server id={s.server_id} name={s.server_name} />
           })}
         </div>
       </div>
     </div>
-  );
+  )
 }

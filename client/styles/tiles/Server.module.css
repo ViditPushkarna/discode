@@ -1,8 +1,15 @@
 .container {
   height: 9vh;
   width: 4vw;
+  display: flex;
   margin: 2vh auto 0 auto;
   border: 2px solid black;
   border-radius: 100vh;
   cursor: pointer;
+}
+
+.container > p { 
+  color: white;
+  font-size: 1.2rem;
+  margin: auto;
 }
