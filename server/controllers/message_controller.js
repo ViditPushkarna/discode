@@ -28,9 +28,9 @@ export const fetchAllMess = async function (req, res) {
     let allMessages = await Messages.find({ channel: req.body.channel_id });
     let allmess = [];
     for (let message of allMessages) {
-      let sender = await Users.findById(message.sender).name;
+      let sender = await Users.findById(message.sender);
       allmess.push({
-        sender: sender,
+        sender: sender.name,
         message_id: message._id,
         text: message.text,
       });

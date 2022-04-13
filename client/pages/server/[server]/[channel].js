@@ -15,22 +15,21 @@ export default function Home() {
   const [messages, setmessages] = useState([])
 
   const getMessages = () => {
-    const user = JSON.parse(localStorage.getItem("user"))
     const req = {
-      user_id: user._id,
+      channel_id: ids.channel,
     }
 
     const token = localStorage.getItem("token")
 
     axios
-      .post("http://localhost:5000/user/userInfo", req, {
+      .post("http://localhost:5000/message/fetchAll", req, {
         headers: {
           Authorization: token,
         },
       })
       .then((res) => {
         if (res.data.success) {
-          console.log(res.data.servers)
+          setmessages(res.data.messages)
         } else throw res.data.message
       })
       .catch((err) => {
@@ -109,15 +108,14 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    if (ids === undefined) return
+    if (ids.server === undefined) return
 
     const c = localStorage.getItem("channelList")
-    console.log(c)
     if (c && c.server === ids.server && c.channelList)
       setchannellist(c.channelList)
     else getChannels()
 
-    // getMessages()
+    getMessages()
   }, [ids])
 
   return (
@@ -145,7 +143,7 @@ export default function Home() {
       <div className="row2">
         <div className="free"></div>
         <div className="maindiv">
-          {messages.map(m => <Message />)}
+          {messages.map(m => <Message key={m.message_id} id={m.message_id} text={m.text} sender={m.sender} />)}
 
           <div className="chatBox">
             <div className="inputBox">

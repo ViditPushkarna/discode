@@ -88,7 +88,7 @@ export default function Dashboard() {
 
           <div className={styles.signup}>
             <form>
-              <label className={styles.label} for="chk" aria-hidden="true">
+              <label className={styles.label} htmlFor="chk" aria-hidden="true">
                 Sign up
               </label>
               <div className={styles.input_fields}>
@@ -141,7 +141,7 @@ export default function Dashboard() {
 
           <div className={styles.login}>
             <form>
-              <label className={styles.label} for="chk" aria-hidden="true">
+              <label className={styles.label} htmlFor="chk" aria-hidden="true">
                 Login
               </label>
               <div className={styles.input_fields}>
