@@ -18,6 +18,12 @@ export default function message(props) {
       <div className={styles.message_div}>
         <p className={styles.message}>{text}</p>
       </div>
+      <div className={styles.del} onClick={() => {
+        const event = new CustomEvent('deleteMsg', {detail: id})
+        document.dispatchEvent(event)
+      }}>
+        <p>X</p>
+      </div>
     </div>
   );
 }

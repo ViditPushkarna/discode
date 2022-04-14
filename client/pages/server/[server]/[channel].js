@@ -123,6 +123,10 @@ export default function Home() {
       user_id: user._id,
     });
 
+    document.addEventListener("deleteMsg", data => {
+      socket.emit('delete_message', data.detail)
+    })
+
     const btn = document.getElementById("btn");
 
     btn.addEventListener("click", (e) => {
@@ -144,9 +148,15 @@ export default function Home() {
     socket.on("new_message_created", (data) => {
       console.log(data);
       setmessages((arr) => {
-        return [...arr, data];
-      });
-    });
+        return [...arr, data]
+      })
+    })
+
+    socket.on("message_deleted", id => {
+      setmessages(arr => {
+        return arr.filter(m => m.message_id !== id)
+      })
+    })
 
     getMessages();
 

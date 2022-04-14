@@ -7,7 +7,7 @@
 .username {
   color: aliceblue;
   margin-left: 1rem;
-  text-align: center;
+  margin: auto 1vh;
   padding: 0;
 }
 .message_box:hover {
@@ -25,4 +25,13 @@
 
 .message_div {
   color: aliceblue;
+  margin: auto 1vh;
+}
+
+.del {
+  cursor: pointer;
+  margin: auto 3vw auto auto;
+  tab-size: 1rem;
+  font-weight: 800;
+  color: red;
 }
