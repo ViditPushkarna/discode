@@ -31,9 +31,9 @@ export const createMessageio = async function (msg) {
       channel: msg.channel_id,
     });
     // console.log("reached 2");
-    return;
+    return true;
   } catch (err) {
-    return;
+    return false;
   }
 };
 
