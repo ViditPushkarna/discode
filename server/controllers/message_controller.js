@@ -42,6 +42,17 @@ export const createMessageio = async function (msg) {
   }
 };
 
+export const deleteMessageio = async function (msg) {
+  try {
+    let message = Messages.findById(msg);
+    if (!message) return "";
+    await Messages.findByIdAndDelete(msg);
+    return msg;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const fetchAllMess = async function (req, res) {
   try {
     let allMessages = await Messages.find({ channel: req.body.channel_id });

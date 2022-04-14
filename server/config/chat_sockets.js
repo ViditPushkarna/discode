@@ -18,6 +18,16 @@ export const iofunc = (io) => {
         });
     });
 
+    socket.on("delete_message", (data) => {
+      deleteMessageio(msg)
+        .then((data) => {
+          io.in(msg.channel_id).emit("message_deleted", data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+
     // disconnect
     socket.on("disconnecting", () => {
       io.in(socket.data.channel_id).emit(
