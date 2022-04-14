@@ -30,7 +30,6 @@ export const createMessageio = async function (msg) {
       text: msg.message_data,
       channel: msg.channel_id,
     });
-
     return message
   } catch (err) {
     throw err
