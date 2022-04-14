@@ -30,9 +30,15 @@ export const createMessageio = async function (msg) {
       text: msg.message_data,
       channel: msg.channel_id,
     });
-    return message
+    const user = await Users.findById(msg.sender_id);
+    const newmsg = {
+      sender: user.name,
+      message_id: message._id,
+      text: msg.message_data,
+    };
+    return newmsg;
   } catch (err) {
-    throw err
+    throw err;
   }
 };
 
