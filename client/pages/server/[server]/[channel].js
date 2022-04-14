@@ -153,6 +153,7 @@ export default function Home() {
     })
 
     socket.on("message_deleted", id => {
+      console.log(id)
       setmessages(arr => {
         return arr.filter(m => m.message_id !== id)
       })
