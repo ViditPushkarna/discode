@@ -1,71 +1,71 @@
-import { useState, useEffect } from "react";
-import styles from "../styles/Login.module.css";
-import axios from "axios";
-import Router from "next/router";
+import { useState, useEffect } from "react"
+import styles from "../styles/Login.module.css"
+import axios from "axios"
+import Router from "next/router"
 
 export default function Dashboard() {
-  const [susername, setsusername] = useState("");
-  const [semail, setsemail] = useState("");
-  const [spassword, setspassword] = useState("");
+  const [susername, setsusername] = useState("")
+  const [semail, setsemail] = useState("")
+  const [spassword, setspassword] = useState("")
 
-  const [lemail, setlemail] = useState("");
-  const [lpassword, setlpassword] = useState("");
+  const [lemail, setlemail] = useState("")
+  const [lpassword, setlpassword] = useState("")
 
   const signup = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const req = {
       user_name: susername,
       user_email: semail,
       user_password: spassword,
-    };
+    }
 
     axios
       .post("http://localhost:5000/user/createUser", req)
       .then((res) => {
         if (res.data.success) {
-          localStorage.setItem("token", res.data.token);
-          localStorage.setItem("user", JSON.stringify(res.data.user));
+          localStorage.setItem("token", res.data.token)
+          localStorage.setItem("user", JSON.stringify(res.data.user))
 
-          Router.push("/home");
-        } else throw res.data.message;
+          Router.push("/home")
+        } else throw res.data.message
       })
       .catch((err) => {
-        setsemail("");
-        setspassword("");
-        setsusername("");
-        console.log(err);
-      });
-  };
+        setsemail("")
+        setspassword("")
+        setsusername("")
+        console.log(err)
+      })
+  }
 
   const login = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const req = {
       user_email: lemail,
       user_password: lpassword,
-    };
+    }
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
 
     axios
       .post("http://localhost:5000/user/login", req)
       .then((res) => {
         if (res.data.success) {
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("user", JSON.stringify(res.data.user))
+          localStorage.setItem("token", res.data.token)
 
-          Router.push("/home");
-        } else throw res.data.message;
+          Router.push("/home")
+        } else throw res.data.message
       })
       .catch((err) => {
-        setlemail("");
-        setlpassword("");
-        console.log(err);
-      });
-  };
+        setlemail("")
+        setlpassword("")
+        console.log(err)
+      })
+  }
 
-  useEffect(() => {}, []);
+  useEffect(() => {}, [])
 
   return (
     <>
@@ -181,5 +181,5 @@ export default function Dashboard() {
         </div>
       </div>
     </>
-  );
+  )
 }
