@@ -44,10 +44,18 @@ export const createMessageio = async function (msg) {
 
 export const deleteMessageio = async function (msg) {
   try {
-    let message = Messages.findById(msg);
+    // console.log(msg);
+    let message = await Messages.findById(msg);
+    // let channel = await Channels.findById(message.channel);
     if (!message) return "";
+    let retVal = {
+      msg: msg,
+      channel_id: message.channel.toString(),
+    };
     await Messages.findByIdAndDelete(msg);
-    return msg;
+
+    // console.log(retVal);
+    return retVal;
   } catch (err) {
     throw err;
   }

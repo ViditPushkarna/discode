@@ -123,21 +123,39 @@ export default function Home() {
       user_id: user._id,
     });
 
-    document.addEventListener("deleteMsg", data => {
-      socket.emit('delete_message', data.detail)
-    })
+    document.addEventListener("deleteMsg", (data) => {
+      socket.emit("delete_message", data.detail);
+    });
 
     const btn = document.getElementById("btn");
+    const inp = document.getElementById("text");
 
     btn.addEventListener("click", (e) => {
       const user = JSON.parse(localStorage.getItem("user"));
       const input = document.getElementById("text");
+      if (input == "") return;
 
       socket.emit("create_message", {
         sender_id: user._id,
         message_data: input.value,
         channel_id: ids.channel,
       });
+      input.value = "";
+    });
+
+    inp.addEventListener("keyup", (e) => {
+      // console.log(e);
+      if (e.key !== "Enter") return;
+      const user = JSON.parse(localStorage.getItem("user"));
+      const input = document.getElementById("text");
+      if (input == "") return;
+
+      socket.emit("create_message", {
+        sender_id: user._id,
+        message_data: input.value,
+        channel_id: ids.channel,
+      });
+      input.value = "";
     });
 
     const c = localStorage.getItem("channelList");
@@ -146,18 +164,18 @@ export default function Home() {
     else getChannels();
 
     socket.on("new_message_created", (data) => {
-      console.log(data);
+      // console.log(data);
       setmessages((arr) => {
-        return [...arr, data]
-      })
-    })
+        return [...arr, data];
+      });
+    });
 
-    socket.on("message_deleted", id => {
-      console.log(id)
-      setmessages(arr => {
-        return arr.filter(m => m.message_id !== id)
-      })
-    })
+    socket.on("message_deleted", (id) => {
+      // console.log(id);
+      setmessages((arr) => {
+        return arr.filter((m) => m.message_id !== id);
+      });
+    });
 
     getMessages();
 

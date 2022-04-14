@@ -7,7 +7,11 @@ export default function createServer(props) {
   const { setView } = props;
   const [name, setName] = useState("");
 
-  const click = () => {
+  const click = (e) => {
+    // console.log(e);
+    // return;
+    if (e.type === "keyup" && e.key !== "Enter") return;
+
     const user = JSON.parse(localStorage.getItem("user"));
 
     const req = {
@@ -48,6 +52,7 @@ export default function createServer(props) {
           value={name}
           spellCheck="false"
           onChange={(e) => setName(e.target.value)}
+          onKeyUp={click}
         />
         <button className={styles.button} onClick={click}>
           Create
