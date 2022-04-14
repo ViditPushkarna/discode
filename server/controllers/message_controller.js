@@ -27,13 +27,13 @@ export const createMessageio = async function (msg) {
   try {
     let message = await Messages.create({
       sender: msg.sender_id,
-      text: msg.msg_data,
+      text: msg.message_data,
       channel: msg.channel_id,
     });
-    // console.log("reached 2");
-    return;
+
+    return message
   } catch (err) {
-    return;
+    throw err
   }
 };
 

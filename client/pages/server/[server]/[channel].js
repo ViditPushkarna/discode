@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import styles from "../../../styles/Server.module.css"
 import Channel from "../../../components/tiles/channel"
 import Server from "../../../components/tiles/server"
@@ -7,8 +7,6 @@ import axios from "axios"
 import io from "socket.io-client"
 import Router, { useRouter } from "next/router"
 
-const socket = useRef(io("http://localhost:5000"))
-
 export default function Home() {
   const router = useRouter()
   const ids = router.query
@@ -16,7 +14,6 @@ export default function Home() {
   const [channellist, setchannellist] = useState([])
   const [serverlist, setserverlist] = useState([])
   const [messages, setmessages] = useState([])
-  const [text, settext] = useState([])
 
   const getMessages = () => {
     const req = {
@@ -110,36 +107,47 @@ export default function Home() {
     if (s) setserverlist(s)
     else getServers()
 
-    const user = JSON.parse(localStorage.getItem("user"))
-
-    socket.current.emit('joinChat', {
-      channel_id: ids.channel,
-      user_id : user._id
-    })
-
+    return () => {
+      socket.disconnect()
+    }
   }, [])
-
-  const send = () => {
-    if (ids.server === undefined) return
-    
-    const user = JSON.parse(localStorage.getItem("user"))
-    socket.current.emit('create_message', {
-      sender_id: user._id,
-      message_data: text,
-      channel_id: ids.channel
-    })
-  }
 
   useEffect(() => {
     if (ids.server === undefined) return
+
+    const socket = io("http://localhost:5000/")
+    const user = JSON.parse(localStorage.getItem("user"))
+
+    socket.emit('joinChat', {
+      channel_id: ids.channel,
+      user_id : user._id
+    })
     
+    const btn = document.getElementById('btn')
+
+    btn.addEventListener('click', e => {
+      const user = JSON.parse(localStorage.getItem("user"))
+      const input = document.getElementById('text')
+
+      socket.emit('create_message', {
+        sender_id: user._id,
+        message_data: input.value,
+        channel_id: ids.channel
+      })
+    })
+
     const c = localStorage.getItem("channelList")
     if (c && c.server === ids.server && c.channelList)
       setchannellist(c.channelList)
     else getChannels()
 
+    socket.on('new_message_created', data => console.log(data))
+
     getMessages()
 
+    return () => {
+      socket.disconnect()
+    }
   }, [ids])
 
   return (
@@ -171,8 +179,8 @@ export default function Home() {
 
           <div className="chatBox">
             <div className="inputBox">
-              <input spellCheck="false" value={text} onChange={e => settext(e.target.value)} />
-              <button onClick={send}>Send</button>
+              <input spellCheck="false" id="text"/>
+              <button id="btn">Send</button>
             </div>
           </div>
         </div>
