@@ -8,7 +8,8 @@ export default function createChannel(props) {
 
   const [name, setName] = useState("");
 
-  const click = () => {
+  const click = (e) => {
+    if (e.type === "keyup" && e.key !== "Enter") return;
     const req = {
       channel_name: name,
       server_id: id,
@@ -47,6 +48,7 @@ export default function createChannel(props) {
           value={name}
           spellCheck="false"
           onChange={(e) => setName(e.target.value)}
+          onKeyUp={click}
         />
         <button className={styles.button} onClick={click}>
           Create

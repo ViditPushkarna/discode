@@ -1,4 +1,7 @@
-import { createMessageio } from "../controllers/message_controller.js";
+import {
+  createMessageio,
+  deleteMessageio,
+} from "../controllers/message_controller.js";
 
 export const iofunc = (io) => {
   io.on("connection", (socket) => {
@@ -18,10 +21,11 @@ export const iofunc = (io) => {
         });
     });
 
-    socket.on("delete_message", (data) => {
+    socket.on("delete_message", (msg) => {
       deleteMessageio(msg)
         .then((data) => {
-          io.in(msg.channel_id).emit("message_deleted", data);
+          // console.log(data);
+          io.in(data.channel_id).emit("message_deleted", data.msg);
         })
         .catch((err) => {
           console.log(err);

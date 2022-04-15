@@ -24,11 +24,16 @@ export const createServer = async function (req, res) {
         $push: { servers: server._id },
       }
     );
+
+    let resp = {
+      server_id: server._id,
+      server_name: server.name,
+    };
     // add this new server to creator's server list
     return res.status(201).send({
       success: true,
       message: "Server successfully created",
-      server: server,
+      server: resp,
     });
   } catch (err) {
     return res.status(404).send({
