@@ -102,6 +102,19 @@ export const removeAdmin = async function (req, res) {
 export const addMember = async function (req, res) {
   try {
     let server = await Server.findById(req.body.server_id);
+    if (!server) {
+      return res.status(404).send({
+        success: false,
+        message: "Bhai re server to na hai idhar",
+      });
+    }
+    let user = await server.members.findById(req.body.user_id);
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "Bhag ja yaha se",
+      });
+    }
     // add member
     await Server.updateOne(
       {
@@ -119,10 +132,14 @@ export const addMember = async function (req, res) {
         $push: { servers: req.body.server_id },
       }
     );
+    let resp = {
+      server_id: server._id,
+      server_name: server.name,
+    };
     return res.status(201).send({
       success: true,
       message: `You are added into the server ${server.name} Successfully`,
-      server: server,
+      server: resp,
     });
   } catch (err) {
     return res.status(404).send({
