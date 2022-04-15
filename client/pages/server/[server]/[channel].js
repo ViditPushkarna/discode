@@ -106,10 +106,6 @@ export default function Home() {
 
     if (s) setserverlist(s);
     else getServers();
-
-    return () => {
-      socket.disconnect();
-    };
   }, []);
 
   useEffect(() => {
@@ -220,7 +216,7 @@ export default function Home() {
 
           <div className="chatBox">
             <div className="inputBox">
-              <input spellCheck="false" id="text" />
+              <input spellCheck="false" autoComplete="off" id="text" />
               <button id="btn">Send</button>
             </div>
           </div>

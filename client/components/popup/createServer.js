@@ -7,9 +7,7 @@ export default function createServer(props) {
   const { setView } = props;
   const [name, setName] = useState("");
 
-  const click = (e) => {
-    // console.log(e);
-    // return;
+  const click = e => {
     if (e.type === "keyup" && e.key !== "Enter") return;
 
     const user = JSON.parse(localStorage.getItem("user"));
@@ -29,7 +27,17 @@ export default function createServer(props) {
       })
       .then((res) => {
         if (res.data.success) {
-          Router.push("/server/" + res.data.server._id);
+          let s = JSON.parse(localStorage.getItem("serverList"));
+          console.log(s)
+
+          if (s && Array.isArray(s)) {
+            s.push(res.data.server)
+            localStorage.setItem("serverList", JSON.stringify(s))
+          } else {
+            localStorage.setItem("serverList", JSON.stringify([res.data.server]))
+          }
+
+          Router.push("/server/" + res.data.server.server_id);
         } else throw res.data.message;
       })
       .catch((err) => {
