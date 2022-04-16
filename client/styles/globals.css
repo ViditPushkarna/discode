@@ -127,3 +127,35 @@ a {
   width: 50%;
   border-bottom: 2px solid whitesmoke;
 }
+
+.messages_container {
+  height: 80vh;
+  overflow-y: scroll;
+}
+
+.invite_div {
+  margin: auto;
+}
+
+.server_id {
+  border: none;
+  width: 20vw;
+  height: 5vh;
+  text-align: center;
+  color: whitesmoke;
+  background-color: transparent;
+  border-radius: 50px;
+  font-size: 1rem;
+}
+
+.join {
+  margin-left: 20px;
+  height: 5vh;
+  width: 5vw;
+  border-radius: 20px;
+  background-color: cornsilk;
+  font-size: 1rem;
+  color: #18222e;
+  cursor: pointer;
+  border: solid white 1px;
+}
