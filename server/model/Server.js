@@ -11,6 +11,12 @@ const serverSchema = new mongoose.Schema({
       ref: "Channel",
     },
   ],
+  editors: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Editors",
+    },
+  ],
   members: [
     {
       type: mongoose.Schema.Types.ObjectId,
