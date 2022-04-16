@@ -108,13 +108,18 @@ export const addMember = async function (req, res) {
         message: "Bhai re server to na hai idhar",
       });
     }
-    let user = await server.members.findById(req.body.user_id);
-    if (!user) {
+    let present = await Server.find({
+      _id: req.body.server_id,
+      members: { $in: [req.body.user_id] },
+    }).count();
+
+    if (present > 0) {
       return res.status(404).send({
         success: false,
-        message: "Bhag ja yaha se",
+        message: "You are already in this server",
       });
     }
+
     // add member
     await Server.updateOne(
       {
