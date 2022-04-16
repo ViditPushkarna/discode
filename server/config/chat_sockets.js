@@ -32,6 +32,15 @@ export const iofunc = (io) => {
         });
     });
 
+    socket.on('editorChangesSend', data => {
+      socket.broadcast.emit('editorChanges', data)
+    })
+
+    socket.on('changeLangSend', data => {
+      console.log(data)
+      socket.broadcast.emit('changeLang', data)
+    })
+
     // disconnect
     socket.on("disconnecting", () => {
       io.in(socket.data.channel_id).emit(

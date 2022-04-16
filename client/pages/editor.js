@@ -24,9 +24,21 @@ export default function IndexPage() {
       monacoRef.current.getModel().setValue(data)
     })
 
-    monacoRef.current.getModel().onDidChangeContent(e => {
-      const val = monacoRef.current.getValue()
-      socket.emit('editorSendChanges', val)
+    document.addEventListener('keyup', e => {
+      if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Tab' || e.key === 'Delete') {
+        const val = monacoRef.current.getValue()
+        socket.emit('editorChangesSend', val)
+      }
+    })
+
+    document.getElementById('selectlang').addEventListener('change', e => {
+      setlang(e.target.value)
+      socket.emit('changeLangSend', e.target.value)
+    })
+
+    socket.on('changeLang', data => {
+      console.log(data)
+      setlang(data)
     })
 
     return () => {
@@ -36,11 +48,11 @@ export default function IndexPage() {
 
   return (
     <>
-      <select value={lang} onChange={e => setlang(e.target.value)}>
-        <option>html</option>
-        <option>css</option>
-        <option>javascript</option>
-        <option>json</option>
+      <select id="selectlang" value={lang}>
+        <option value="html">html</option>
+        <option value="css">css</option>
+        <option value="javascript">javascript</option>
+        <option value="json">json</option>
       </select>
       <MonacoEditor
         height="90vh"
