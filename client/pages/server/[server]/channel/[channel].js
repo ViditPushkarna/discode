@@ -23,11 +23,12 @@ export default function Home() {
   const [messages, setmessages] = useState([]);
 
   const getMessages = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return Router.push("/signup");
+
     const req = {
       channel_id: ids.channel,
     };
-
-    const token = localStorage.getItem("token");
 
     axios
       .post("http://localhost:5000/message/fetchAll", req, {
@@ -49,6 +50,8 @@ export default function Home() {
 
   const getServers = () => {
     const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return Router.push("/signup");
+    
     const req = {
       user_id: user._id,
     };
@@ -76,11 +79,12 @@ export default function Home() {
   };
 
   const getInfo = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return Router.push("/signup");
+
     const req = {
       server_id: ids.server,
     };
-
-    const token = localStorage.getItem("token");
 
     axios
       .post("http://localhost:5000/server/serverInfo", req, {

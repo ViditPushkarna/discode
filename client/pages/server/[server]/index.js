@@ -20,11 +20,13 @@ export default function Func() {
 
   const getServers = () => {
     const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!user || !token) return Router.push("/signup");
+    
     const req = {
       user_id: user._id,
     };
-
-    const token = localStorage.getItem("token");
 
     axios
       .post("http://localhost:5000/user/userInfo", req, {
