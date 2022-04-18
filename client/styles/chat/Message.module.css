@@ -1,15 +1,17 @@
 .message_box {
   margin: auto 0 auto 0;
   background-color: transparent;
-  bottom: 0mm;
   display: flex;
+  bottom: 0mm;
 }
+
 .username {
-  color: aliceblue;
-  margin-left: 1rem;
+  color: darkcyan;
   margin: auto 1vh;
+  margin-left: 2rem;
   padding: 0;
 }
+
 .message_box:hover {
   background-color: rgb(9, 9, 22);
 }
@@ -25,7 +27,7 @@
 
 .message_div {
   color: aliceblue;
-  margin: auto 1vh;
+  margin-left: 2vw;
 }
 
 .del {
@@ -33,5 +35,13 @@
   margin: auto 3vw auto auto;
   tab-size: 1rem;
   font-weight: 800;
-  color: red;
+  color: grey;
+}
+.del:hover {
+  color: brown;
+}
+.message_element {
+  margin: auto 0 0 0;
+  width: 65vw;
+  word-break: break-all;
 }

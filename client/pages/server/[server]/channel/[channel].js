@@ -51,7 +51,7 @@ export default function Home() {
   const getServers = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return Router.push("/signup");
-    
+
     const req = {
       user_id: user._id,
     };
@@ -151,7 +151,6 @@ export default function Home() {
       const user = JSON.parse(localStorage.getItem("user"));
       const input = document.getElementById("text");
       if (input == "") return;
-
       socket.emit("create_message", {
         sender_id: user._id,
         message_data: input.value,
@@ -202,6 +201,11 @@ export default function Home() {
       socket.disconnect();
     };
   }, [ids]);
+
+  useEffect(() => {
+    const chatDiv = document.getElementById("scrollChat");
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+  }, [messages]);
 
   return (
     <>
@@ -263,14 +267,16 @@ export default function Home() {
         <div className="row2">
           <div className="free"></div>
           <div className="maindiv">
-            {messages.map((m) => (
-              <Message
-                key={m.message_id}
-                id={m.message_id}
-                text={m.text}
-                sender={m.sender}
-              />
-            ))}
+            <div className="message_container" id="scrollChat">
+              {messages.map((m) => (
+                <Message
+                  key={m.message_id}
+                  id={m.message_id}
+                  text={m.text}
+                  sender={m.sender}
+                />
+              ))}
+            </div>
 
             <div className="chatBox">
               <div className="inputBox">
