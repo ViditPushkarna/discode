@@ -1,3 +1,4 @@
+import { fetchDataio, saveio } from "../controllers/editor_controller.js";
 import {
   createMessageio,
   deleteMessageio,
@@ -32,14 +33,41 @@ export const iofunc = (io) => {
         });
     });
 
-    socket.on('editorChangesSend', data => {
-      socket.broadcast.emit('editorChanges', data)
-    })
+    socket.on("joinEditor", (ed) => {
+      socket.join(ed);
+      io.sockets
+        .in(ed)
+        .fetchSockets()
+        .then((data) => {
+          if (data.length === 0) {
+            return fetchDataio(ed);
+          } else {
+            // this is for computer networks proglm
+            // ask from data[0] , data[1]
+            data[0].emit("requestingData", ed);
+          }
+        })
+        .catch((err) => {
+          return {
+            text: "",
+            lang: "javascript",
+          };
+        });
+    });
 
-    socket.on('changeLangSend', data => {
-      console.log(data)
-      socket.broadcast.emit('changeLang', data)
-    })
+    socket.on("editorChangesSend", (data) => {
+      io.in(data.editor_id).emit("editorChanges", data);
+    });
+
+    socket.on("changeLangSend", (data) => {
+      // console.log(data)
+      // mongo request
+      io.in(data.editor_id).emit("changeLang", data);
+    });
+
+    socket.on("saveData", (data) => {
+      return saveio(data);
+    });
 
     // disconnect
     socket.on("disconnecting", () => {

@@ -75,3 +75,31 @@ export const deleteEditor = async function (req, res) {
     });
   }
 };
+
+export const fetchDataio = async function (data) {
+  try {
+    let editor = await Editors.findById(data);
+    let resp = {
+      text: editor.data,
+      lang: editor.lang,
+    };
+    return resp;
+  } catch (err) {
+    return {
+      text: "",
+      lang: "javascript",
+    };
+  }
+};
+
+export const saveio = async function (data) {
+  try {
+    let editor = await Editors.findById(data.editor_id);
+
+    editor.data = data.text;
+    editor.lang = data.lang;
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
