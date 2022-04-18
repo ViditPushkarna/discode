@@ -1,0 +1,19 @@
+.container {
+    height: 9vh;
+    width: 4vw;
+    margin: 2vh auto 0 auto;
+    border: 2px solid black;
+    border-radius: 100vh;
+}
+
+.servername {
+    color: aliceblue;
+    margin-left: 2.5rem;
+}
+
+.addChannel {
+    width: 15vw;
+    margin: 0vh auto 0 auto;
+    color: azure;
+    cursor: pointer;
+}

@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react"
 import styles from "../styles/Home.module.css"
-import Channel from "../components/tiles/channel"
 import CreateServerPopup from "../components/popUp/createServer"
-import Member from "../components/tiles/member"
 import Server from "../components/tiles/server"
 import axios from "axios"
 import Router from "next/router"

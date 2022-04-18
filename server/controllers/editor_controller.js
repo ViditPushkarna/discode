@@ -6,7 +6,7 @@ export const createEditor = async function (req, res) {
     let editor = await Editors.create({
       name: req.body.editor_name,
       server: req.body.server_id,
-      lang: req.body.lang,
+      lang: "javascript",
       data: "",
     });
     // console.log("reached 2");

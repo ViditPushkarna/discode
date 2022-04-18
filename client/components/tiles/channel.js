@@ -10,7 +10,7 @@ export default function channelTab(props) {
 
   return (
     <div key={id} className={styles.container} onClick={() => {
-      Router.push('/server/' + server + '/' + id)
+      Router.push('/server/' + server + '/channel/' + id)
     }}>
       <h5>👉🏿😎👈 {name}</h5>
     </div>

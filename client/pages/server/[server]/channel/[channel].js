@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
-import styles from "../../../styles/Server.module.css";
-import Channel from "../../../components/tiles/channel";
-import Server from "../../../components/tiles/server";
-import Message from "../../../components/chat/message";
+import styles from "../../../../styles/Server.module.css";
+import Channel from "../../../../components/tiles/channel";
+import Server from "../../../../components/tiles/server";
+import Editor from "../../../../components/tiles/editor";
+import Message from "../../../../components/chat/message";
+import CreateChannel from "../../../../components/popup/createChannel";
+import CreateEditor from "../../../../components/popup/createEditor";
 import axios from "axios";
 import io from "socket.io-client";
 import Router, { useRouter } from "next/router";
@@ -11,7 +14,11 @@ export default function Home() {
   const router = useRouter();
   const ids = router.query;
 
+  const [createChannelPopup, setCreateChannelPopup] = useState(false);
+  const [createEditorPopup, setCreateEditorPopup] = useState(false);
+
   const [channellist, setchannellist] = useState([]);
+  const [editorlist, seteditorlist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
   const [messages, setmessages] = useState([]);
 
@@ -68,7 +75,7 @@ export default function Home() {
       });
   };
 
-  const getChannels = () => {
+  const getInfo = () => {
     const req = {
       server_id: ids.server,
     };
@@ -92,6 +99,16 @@ export default function Home() {
           );
 
           setchannellist(res.data.channels);
+
+          localStorage.setItem(
+            "editorList",
+            JSON.stringify({
+              server: ids.server,
+              editorList: res.data.editors,
+            })
+          );
+
+          seteditorlist(res.data.editors);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -155,9 +172,11 @@ export default function Home() {
     });
 
     const c = localStorage.getItem("channelList");
-    if (c && c.server === ids.server && c.channelList)
-      setchannellist(c.channelList);
-    else getChannels();
+    const e = localStorage.getItem("editorList");
+    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
+      setchannellist(c.channelList)
+      seteditorlist(e.editorList)
+    } else getInfo();
 
     socket.on("new_message_created", (data) => {
       // console.log(data);
@@ -181,54 +200,90 @@ export default function Home() {
   }, [ids]);
 
   return (
-    <div className="page">
-      <div className="row1">
-        <div className="channel">
-          <div className={styles.servername}>
-            <h4>Server Name</h4>
+    <>
+      {createChannelPopup ? (
+        <CreateChannel id={ids.server} setView={setCreateChannelPopup} />
+      ) : null}
+
+      {createEditorPopup ? (
+        <CreateEditor id={ids.server} setView={setCreateEditorPopup} />
+      ) : null}
+      <div className="page">
+        <div className="row1">
+          <div className="channel">
+            <div className={styles.servername}>
+              <h4>Server Name</h4>
+            </div>
+
+            {channellist.map((ch) => {
+              return (
+                <Channel
+                  key={ch.channel_id}
+                  id={ch.channel_id}
+                  name={ch.channel_name}
+                  server={ids.server}
+                />
+              );
+            })}
+            <p
+              className={styles.addChannel}
+              onClick={() => setCreateChannelPopup(true)}
+            >
+              Add+ Channel
+            </p>
+
+            <br />
+
+            {editorlist.map((ch) => {
+              return (
+                <Editor
+                  key={ch.editor_id}
+                  id={ch.editor_id}
+                  name={ch.editor_name}
+                  server={ids.server}
+                />
+              );
+            })}
+
+            <p
+              className={styles.addChannel}
+              onClick={() => setCreateEditorPopup(true)}
+            >
+              Add+ Editor
+            </p>
+
           </div>
-
-          {channellist.map((ch) => {
-            return (
-              <Channel
-                key={ch.channel_id}
-                id={ch.channel_id}
-                name={ch.channel_name}
-                server={ids.server}
-              />
-            );
-          })}
+          <div className="controller"></div>
         </div>
-        <div className="controller"></div>
-      </div>
 
-      <div className="row2">
-        <div className="free"></div>
-        <div className="maindiv">
-          {messages.map((m) => (
-            <Message
-              key={m.message_id}
-              id={m.message_id}
-              text={m.text}
-              sender={m.sender}
-            />
-          ))}
+        <div className="row2">
+          <div className="free"></div>
+          <div className="maindiv">
+            {messages.map((m) => (
+              <Message
+                key={m.message_id}
+                id={m.message_id}
+                text={m.text}
+                sender={m.sender}
+              />
+            ))}
 
-          <div className="chatBox">
-            <div className="inputBox">
-              <input spellCheck="false" autoComplete="off" id="text" />
-              <button id="btn">Send</button>
+            <div className="chatBox">
+              <div className="inputBox">
+                <input spellCheck="false" autoComplete="off" id="text" />
+                <button id="btn">Send</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="row3">
-        <div className="sidestick">
-          {serverlist.map((s) => {
-            return <Server id={s.server_id} name={s.server_name} />;
-          })}
+        <div className="row3">
+          <div className="sidestick">
+            {serverlist.map((s) => {
+              return <Server key={s.server_id} id={s.server_id} name={s.server_name} />;
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

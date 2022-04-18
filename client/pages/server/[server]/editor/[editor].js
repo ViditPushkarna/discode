@@ -1,22 +1,25 @@
 import { useState, useEffect } from "react";
-import styles from "../../../styles/Server.module.css";
-import Channel from "../../../components/tiles/channel";
-import Editor from "../../../components/tiles/editor";
-import Server from "../../../components/tiles/server";
-import CreateChannel from "../../../components/popup/createChannel";
-import CreateEditor from "../../../components/popup/createEditor";
+import styles from "../../../../styles/Editor.module.css";
+import Channel from "../../../../components/tiles/channel";
+import Server from "../../../../components/tiles/server";
+import Editor from "../../../../components/tiles/editor";
+import CreateChannel from "../../../../components/popup/createChannel";
+import CreateEditor from "../../../../components/popup/createEditor";
 import axios from "axios";
+import io from "socket.io-client";
 import Router, { useRouter } from "next/router";
 
-export default function Func() {
+export default function Home() {
   const router = useRouter();
   const ids = router.query;
 
   const [createChannelPopup, setCreateChannelPopup] = useState(false);
   const [createEditorPopup, setCreateEditorPopup] = useState(false);
+
   const [channellist, setchannellist] = useState([]);
   const [editorlist, seteditorlist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
+
 
   const getServers = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -36,6 +39,7 @@ export default function Func() {
         if (res.data.success) {
           localStorage.setItem("serverList", JSON.stringify(res.data.servers));
           setserverlist(res.data.servers);
+          console.log(res.data.servers);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -98,10 +102,24 @@ export default function Func() {
   useEffect(() => {
     if (ids.server === undefined) return;
 
+    const socket = io("http://localhost:5000/");
+
+    // const user = JSON.parse(localStorage.getItem("user"));
+    // socket.emit("joinChat", {
+    //   channel_id: ids.channel,
+    //   user_id: user._id,
+    // });
+
     const c = localStorage.getItem("channelList");
-    if (c && c.server === ids.server && c.channelList)
-      setchannellist(c.channelList);
-    else getInfo();
+    const e = localStorage.getItem("editorList");
+    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
+      setchannellist(c.channelList)
+      seteditorlist(e.editorList)
+    } else getInfo();
+
+    return () => {
+      socket.disconnect();
+    };
   }, [ids]);
 
   return (
@@ -113,10 +131,13 @@ export default function Func() {
       {createEditorPopup ? (
         <CreateEditor id={ids.server} setView={setCreateEditorPopup} />
       ) : null}
-
       <div className="page">
         <div className="row1">
           <div className="channel">
+            <div className={styles.servername}>
+              <h4>Server Name</h4>
+            </div>
+
             {channellist.map((ch) => {
               return (
                 <Channel
@@ -159,7 +180,9 @@ export default function Func() {
 
         <div className="row2">
           <div className="free"></div>
-          <div className="maindiv"></div>
+          <div className="maindiv">
+
+          </div>
         </div>
         <div className="row3">
           <div className="sidestick">
