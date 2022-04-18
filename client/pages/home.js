@@ -1,21 +1,22 @@
-import { useState, useEffect } from "react"
-import styles from "../styles/Home.module.css"
-import CreateServerPopup from "../components/popUp/createServer"
-import Server from "../components/tiles/server"
-import axios from "axios"
-import Router from "next/router"
+import { useState, useEffect } from "react";
+import styles from "../styles/Home.module.css";
+import CreateServerPopup from "../components/popUp/createServer";
+import Server from "../components/tiles/server";
+import axios from "axios";
+import Router from "next/router";
 
 export default function Home() {
-  const [createServer, setCreateServerPopup] = useState(false)
-  const [serverlist, setserverlist] = useState([])
+  const [createServer, setCreateServerPopup] = useState(false);
+  const [serverlist, setserverlist] = useState([]);
 
   const getServers = () => {
-    const user = JSON.parse(localStorage.getItem("user"))
+    const token = localStorage.getItem("token");
+    if (!token) return Router.push("/signup");
+
+    const user = JSON.parse(localStorage.getItem("user"));
     const req = {
       user_id: user._id,
-    }
-
-    const token = localStorage.getItem("token")
+    };
 
     axios
       .post("http://localhost:5000/user/userInfo", req, {
@@ -25,20 +26,20 @@ export default function Home() {
       })
       .then((res) => {
         if (res.data.success) {
-          localStorage.setItem("serverList", JSON.stringify(res.data.servers))
-          setserverlist(res.data.servers)
-        } else throw res.data.message
+          localStorage.setItem("serverList", JSON.stringify(res.data.servers));
+          setserverlist(res.data.servers);
+        } else throw res.data.message;
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         if (err.response && err.response.data === "Unauthorized")
-          Router.push("/signup")
-      })
-  }
+          Router.push("/signup");
+      });
+  };
 
   useEffect(() => {
-    getServers()
-  }, [])
+    getServers();
+  }, []);
 
   return (
     <>
@@ -70,7 +71,7 @@ export default function Home() {
                   id={s.server_id}
                   name={s.server_name}
                 />
-              )
+              );
             })}
 
             <div
@@ -81,5 +82,5 @@ export default function Home() {
         </div>
       </div>
     </>
-  )
+  );
 }
