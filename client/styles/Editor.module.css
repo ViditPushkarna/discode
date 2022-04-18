@@ -17,3 +17,13 @@
     color: azure;
     cursor: pointer;
 }
+
+.headEditor {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 2vh 0;
+}
+
+.headEditor > button {
+    margin: 0 0 0 auto;
+}

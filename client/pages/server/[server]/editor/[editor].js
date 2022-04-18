@@ -100,8 +100,6 @@ export default function Home() {
       });
   };
 
-  // const getEditor
-
   useEffect(() => {
     const s = JSON.parse(localStorage.getItem("serverList"));
 
@@ -126,6 +124,14 @@ export default function Home() {
 
     const socket = io("http://localhost:5000/");
 
+    document.getElementById('saveEditor').addEventListener('click', () => {
+      socket.emit('saveData', {
+        editor_id: ids.editor,
+        text: monacoRef.current.getValue(),
+        lang
+      })
+    }) 
+
     socket.emit("joinEditor", ids.editor);
     socket.on("joinData", data => {
       setlang(data.lang)
@@ -133,8 +139,7 @@ export default function Home() {
     })
 
     socket.on("requestingData", () => {
-      const val = monacoRef.current.getValue()
-      socket.emit('editorChangesSend', val)
+      socket.emit('editorChangesSend', monacoRef.current.getValue())
     })
 
     socket.on('editorChanges', data => {
@@ -143,8 +148,7 @@ export default function Home() {
 
     document.addEventListener('keyup', e => {
       if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Tab' || e.key === 'Delete') {
-        const val = monacoRef.current.getValue()
-        socket.emit('editorChangesSend', val)
+        socket.emit('editorChangesSend', monacoRef.current.getValue())
       }
     })
 
@@ -154,7 +158,6 @@ export default function Home() {
     })
 
     socket.on('changeLang', data => {
-      console.log(data)
       setlang(data)
     })
 
@@ -223,12 +226,16 @@ export default function Home() {
           <div className="free"></div>
           <div className="maindiv">
 
-            <select id="selectlang" value={lang}>
-              <option value="html">html</option>
-              <option value="css">css</option>
-              <option value="javascript">javascript</option>
-              <option value="json">json</option>
-            </select>
+            <div className={styles.headEditor}>
+              <select id="selectlang" value={lang}>
+                <option value="html">html</option>
+                <option value="css">css</option>
+                <option value="javascript">javascript</option>
+                <option value="json">json</option>
+              </select>
+
+              <button id="saveEditor">save</button>
+            </div>
             <MonacoEditor
               height="70vh"
               language={lang}
@@ -236,6 +243,7 @@ export default function Home() {
               theme="vs-dark"
               onMount={handleEditorDidMount}
             />
+
 
           </div>
         </div>
