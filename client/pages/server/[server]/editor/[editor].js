@@ -1,29 +1,38 @@
-import { useState, useEffect } from "react";
-import styles from "../../../styles/Server.module.css";
-import Channel from "../../../components/tiles/channel";
-import Editor from "../../../components/tiles/editor";
-import Server from "../../../components/tiles/server";
-import CreateChannel from "../../../components/popup/createChannel";
-import CreateEditor from "../../../components/popup/createEditor";
+import { useState, useRef, useEffect } from "react";
+import styles from "../../../../styles/Editor.module.css";
+import Channel from "../../../../components/tiles/channel";
+import Server from "../../../../components/tiles/server";
+import Editor from "../../../../components/tiles/editor";
+import CreateChannel from "../../../../components/popup/createChannel";
+import CreateEditor from "../../../../components/popup/createEditor";
 import axios from "axios";
+import io from "socket.io-client";
 import Router, { useRouter } from "next/router";
 
-export default function Func() {
+import dynamic from "next/dynamic";
+const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
+
+export default function Home() {
   const router = useRouter();
   const ids = router.query;
 
   const [createChannelPopup, setCreateChannelPopup] = useState(false);
   const [createEditorPopup, setCreateEditorPopup] = useState(false);
+
   const [channellist, setchannellist] = useState([]);
   const [editorlist, seteditorlist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
 
+  const [lang, setlang] = useState('javascript')
+  const [mount, setMounted] = useState(false)
+  const monacoRef = useRef(null)
+
+
   const getServers = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
-
     if (!user || !token) return Router.push("/signup");
-    
+
     const req = {
       user_id: user._id,
     };
@@ -38,6 +47,7 @@ export default function Func() {
         if (res.data.success) {
           localStorage.setItem("serverList", JSON.stringify(res.data.servers));
           setserverlist(res.data.servers);
+          console.log(res.data.servers);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -97,14 +107,64 @@ export default function Func() {
     else getServers();
   }, []);
 
+  const handleEditorDidMount = (editor, monaco) => {
+    monacoRef.current = editor;
+    setMounted(true)
+  }
+
   useEffect(() => {
-    if (ids.server === undefined) return;
+    if (!mount || ids.server === undefined) return
 
     const c = localStorage.getItem("channelList");
-    if (c && c.server === ids.server && c.channelList)
-      setchannellist(c.channelList);
-    else getInfo();
-  }, [ids]);
+    const e = localStorage.getItem("editorList");
+    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
+      setchannellist(c.channelList)
+      seteditorlist(e.editorList)
+    } else getInfo();
+
+    const socket = io("http://localhost:5000/");
+
+    document.getElementById('saveEditor').addEventListener('click', () => {
+      socket.emit('saveData', {
+        editor_id: ids.editor,
+        text: monacoRef.current.getValue(),
+        lang
+      })
+    }) 
+
+    socket.emit("joinEditor", ids.editor);
+    socket.on("joinData", data => {
+      setlang(data.lang)
+      monacoRef.current.getModel().setValue(data.text)
+    })
+
+    socket.on("requestingData", () => {
+      socket.emit('editorChangesSend', monacoRef.current.getValue())
+    })
+
+    socket.on('editorChanges', data => {
+      monacoRef.current.getModel().setValue(data)
+    })
+
+    document.addEventListener('keyup', e => {
+      if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Tab' || e.key === 'Delete') {
+        socket.emit('editorChangesSend', monacoRef.current.getValue())
+      }
+    })
+
+    document.getElementById('selectlang').addEventListener('change', e => {
+      setlang(e.target.value)
+      socket.emit('changeLangSend', e.target.value)
+    })
+
+    socket.on('changeLang', data => {
+      setlang(data)
+    })
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [mount, ids])
 
   return (
     <>
@@ -115,10 +175,13 @@ export default function Func() {
       {createEditorPopup ? (
         <CreateEditor id={ids.server} setView={setCreateEditorPopup} />
       ) : null}
-
       <div className="page">
         <div className="row1">
           <div className="channel">
+            <div className={styles.servername}>
+              <h4>Server Name</h4>
+            </div>
+
             {channellist.map((ch) => {
               return (
                 <Channel
@@ -161,7 +224,28 @@ export default function Func() {
 
         <div className="row2">
           <div className="free"></div>
-          <div className="maindiv"></div>
+          <div className="maindiv">
+
+            <div className={styles.headEditor}>
+              <select id="selectlang" value={lang}>
+                <option value="html">html</option>
+                <option value="css">css</option>
+                <option value="javascript">javascript</option>
+                <option value="json">json</option>
+              </select>
+
+              <button id="saveEditor">save</button>
+            </div>
+            <MonacoEditor
+              height="70vh"
+              language={lang}
+              defaultValue="// code goes here"
+              theme="vs-dark"
+              onMount={handleEditorDidMount}
+            />
+
+
+          </div>
         </div>
         <div className="row3">
           <div className="sidestick">

@@ -25,7 +25,7 @@ export default function createChannel(props) {
       })
       .then((res) => {
         if (res.data.success) {
-          Router.push("/server/" + id + "/" + res.data.channel._id);
+          Router.push("/server/" + id + "/channel/" + res.data.channel._id);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -42,7 +42,10 @@ export default function createChannel(props) {
           className={styles.cancel}
           src="/cancelButton.svg"
           onClick={() => setView(false)}
-        />
+          />
+
+        <h1>Create Channel</h1>
+
         <input
           className={styles.input}
           value={name}

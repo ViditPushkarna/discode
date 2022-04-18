@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
-import styles from "../styles/Home.module.css";
-import Channel from "../components/tiles/channel";
-import CreateServerPopup from "../components/popUp/createServer";
-import Member from "../components/tiles/member";
-import Server from "../components/tiles/server";
-import axios from "axios";
-import Router from "next/router";
+import { useState, useEffect } from "react"
+import styles from "../styles/Home.module.css"
+import CreateServerPopup from "../components/popUp/createServer"
+import Server from "../components/tiles/server"
+import axios from "axios"
+import Router from "next/router"
 
 export default function Home() {
   const [createServer, setCreateServerPopup] = useState(false);

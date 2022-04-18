@@ -4,7 +4,7 @@ import cors from "cors";
 import routes from "./routes/index.js";
 import http from "http";
 import { Server } from "socket.io";
-import { iofunc } from "./config/chat_sockets.js";
+import { iofunc } from "./config/sockets.js";
 
 // fire up the express app
 const app = express();
