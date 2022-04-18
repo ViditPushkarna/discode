@@ -100,6 +100,8 @@ export default function Home() {
       });
   };
 
+  // const getEditor
+
   useEffect(() => {
     const s = JSON.parse(localStorage.getItem("serverList"));
 
@@ -113,10 +115,27 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (!mount) return
+    if (!mount || ids.server === undefined) return
+
+    const c = localStorage.getItem("channelList");
+    const e = localStorage.getItem("editorList");
+    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
+      setchannellist(c.channelList)
+      seteditorlist(e.editorList)
+    } else getInfo();
 
     const socket = io("http://localhost:5000/");
-    socket.emit("joinEditor");
+
+    socket.emit("joinEditor", ids.editor);
+    socket.on("joinData", data => {
+      setlang(data.lang)
+      monacoRef.current.getModel().setValue(data.text)
+    })
+
+    socket.on("requestingData", () => {
+      const val = monacoRef.current.getValue()
+      socket.emit('editorChangesSend', val)
+    })
 
     socket.on('editorChanges', data => {
       monacoRef.current.getModel().setValue(data)
@@ -142,24 +161,7 @@ export default function Home() {
     return () => {
       socket.disconnect();
     };
-  }, [mount])
-
-  useEffect(() => {
-    if (ids.server === undefined) return;
-
-    const socket = io("http://localhost:5000/");
-
-    const c = localStorage.getItem("channelList");
-    const e = localStorage.getItem("editorList");
-    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
-      setchannellist(c.channelList)
-      seteditorlist(e.editorList)
-    } else getInfo();
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [ids]);
+  }, [mount, ids])
 
   return (
     <>
