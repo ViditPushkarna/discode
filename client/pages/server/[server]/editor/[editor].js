@@ -113,10 +113,34 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (!mount) return
+    if (!mount || ids.server === undefined) return
+
+    const c = localStorage.getItem("channelList");
+    const e = localStorage.getItem("editorList");
+    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
+      setchannellist(c.channelList)
+      seteditorlist(e.editorList)
+    } else getInfo();
 
     const socket = io("http://localhost:5000/");
-    socket.emit("joinEditor");
+
+    document.getElementById('saveEditor').addEventListener('click', () => {
+      socket.emit('saveData', {
+        editor_id: ids.editor,
+        text: monacoRef.current.getValue(),
+        lang
+      })
+    }) 
+
+    socket.emit("joinEditor", ids.editor);
+    socket.on("joinData", data => {
+      setlang(data.lang)
+      monacoRef.current.getModel().setValue(data.text)
+    })
+
+    socket.on("requestingData", () => {
+      socket.emit('editorChangesSend', monacoRef.current.getValue())
+    })
 
     socket.on('editorChanges', data => {
       monacoRef.current.getModel().setValue(data)
@@ -124,8 +148,7 @@ export default function Home() {
 
     document.addEventListener('keyup', e => {
       if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Tab' || e.key === 'Delete') {
-        const val = monacoRef.current.getValue()
-        socket.emit('editorChangesSend', val)
+        socket.emit('editorChangesSend', monacoRef.current.getValue())
       }
     })
 
@@ -135,31 +158,13 @@ export default function Home() {
     })
 
     socket.on('changeLang', data => {
-      console.log(data)
       setlang(data)
     })
 
     return () => {
       socket.disconnect();
     };
-  }, [mount])
-
-  useEffect(() => {
-    if (ids.server === undefined) return;
-
-    const socket = io("http://localhost:5000/");
-
-    const c = localStorage.getItem("channelList");
-    const e = localStorage.getItem("editorList");
-    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
-      setchannellist(c.channelList)
-      seteditorlist(e.editorList)
-    } else getInfo();
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [ids]);
+  }, [mount, ids])
 
   return (
     <>
@@ -221,12 +226,16 @@ export default function Home() {
           <div className="free"></div>
           <div className="maindiv">
 
-            <select id="selectlang" value={lang}>
-              <option value="html">html</option>
-              <option value="css">css</option>
-              <option value="javascript">javascript</option>
-              <option value="json">json</option>
-            </select>
+            <div className={styles.headEditor}>
+              <select id="selectlang" value={lang}>
+                <option value="html">html</option>
+                <option value="css">css</option>
+                <option value="javascript">javascript</option>
+                <option value="json">json</option>
+              </select>
+
+              <button id="saveEditor">save</button>
+            </div>
             <MonacoEditor
               height="70vh"
               language={lang}
@@ -234,6 +243,7 @@ export default function Home() {
               theme="vs-dark"
               onMount={handleEditorDidMount}
             />
+
 
           </div>
         </div>
