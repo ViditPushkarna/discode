@@ -18,6 +18,7 @@ export default function Home() {
 
   const [createChannelPopup, setCreateChannelPopup] = useState(false);
   const [createEditorPopup, setCreateEditorPopup] = useState(false);
+  const [terminalPopup, setterminalPopup] = useState(false);
 
   const [channellist, setchannellist] = useState([]);
   const [editorlist, seteditorlist] = useState([]);
@@ -27,6 +28,9 @@ export default function Home() {
   const [mount, setMounted] = useState(false)
   const monacoRef = useRef(null)
 
+  const [input, setinput] = useState('')
+  const [output, setoutput] = useState('')
+  const [err, seterr] = useState('')
 
   const getServers = () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -130,7 +134,7 @@ export default function Home() {
         text: monacoRef.current.getValue(),
         lang
       })
-    }) 
+    })
 
     socket.emit("joinEditor", ids.editor);
     socket.on("joinData", data => {
@@ -177,6 +181,58 @@ export default function Home() {
       socket.disconnect();
     };
   }, [mount, ids])
+
+  const getoutput = id => {
+    const req = {
+      id,
+      api_key: "guest"
+    }
+
+    console.log(req)
+
+    axios.get(`http://api.paiza.io:80/runners/get_details?id=${id}&api_key=guest`).then(res => {
+      const data = res.data
+
+      if (data) {
+
+        if (data.status === "running") return getoutput(id)
+
+        console.log(res)
+
+        if (data.result === "sucess") {
+          setoutput(data.stdout)
+        } else {
+          if (data.stderr) {
+            seterr(data.stderr)
+          }
+
+          setoutput(data.stdout)
+        }
+      }
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+
+  const run = () => {
+    if (!mount) return
+
+    const req = {
+      source_code: monacoRef.current.getValue(),
+      input: input,
+      language: lang,
+      api_key: "guest"
+    }
+
+    axios.post("http://api.paiza.io:80/runners/create", req).then(res => {
+      console.log(res)
+      
+      const codeid = res.data.id
+      if (codeid) getoutput(codeid)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
 
   return (
     <>
@@ -235,27 +291,58 @@ export default function Home() {
         </div>
 
         <div className="row2">
-          <div className="free"></div>
-          <div className="maindiv">
+          <div className={styles.maindiv}>
 
             <div className={styles.headEditor}>
-              <select id="selectlang" value={lang}>
+              <select id="selectlang" value={lang} onChange={e => setlang(e.target.value)}>
                 <option value="html">html</option>
                 <option value="css">css</option>
                 <option value="javascript">javascript</option>
                 <option value="json">json</option>
+                <option value="typescript">TypeScript</option>
+
+                <option value="xml">XML</option>
+                <option value="php">PHP</option>
+                <option value="cpp">C++</option>
+                <option value="java">Java</option>
+                <option value="python">Python</option>
+                <option value="ruby">Ruby</option>
+                <option value="objective-c">Objective-C</option>
+                <option value="r">R</option>
+                <option value="coffeescript">CoffeeScript</option>
               </select>
 
+              <button onClick={() => setterminalPopup(f => !f)}>Terminal</button>
               <button id="saveEditor">save</button>
             </div>
             <MonacoEditor
-              height="70vh"
+              height="90vh"
               language={lang}
               defaultValue="// code goes here"
               theme="vs-dark"
               onMount={handleEditorDidMount}
             />
 
+            {
+              terminalPopup ?
+                <div className={styles.terminal}>
+                  <div className={styles.input}>
+                    <div className={styles.inputRow}>
+                      <h1>input</h1> <button onClick={run}>Run</button>
+                    </div>
+                    <textarea className={styles.inputArea} value={input} spellCheck="false" onChange={e => setinput(e.target.value)} />
+                  </div>
+
+                  <div className={styles.output}>
+                    <div className={styles.outputRow}>
+                      <h1>output</h1>
+                    </div>
+                    <p className={styles.stderr}>{err}</p>
+                    <p className={styles.outputArea}>{output}</p>
+                  </div>
+
+                </div> : null
+            }
 
           </div>
         </div>
