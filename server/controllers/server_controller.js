@@ -190,6 +190,7 @@ export const serverInfo = async function (req, res) {
     return res.status(201).send({
       success: true,
       message: `Le bhai tera Server details of ${server.name}`,
+      server_name: server.name,
       channels: channels,
       editors: editors,
     });

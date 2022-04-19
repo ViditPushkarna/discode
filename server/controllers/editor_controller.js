@@ -78,12 +78,12 @@ export const deleteEditor = async function (req, res) {
 
 export const fetchDataio = async function (data) {
   try {
+    // console.log(data);
     let editor = await Editors.findById(data);
-    let resp = {
+    return {
       text: editor.data,
       lang: editor.lang,
     };
-    return resp;
   } catch (err) {
     return {
       text: "",
@@ -94,10 +94,10 @@ export const fetchDataio = async function (data) {
 
 export const saveio = async function (data) {
   try {
-    let editor = await Editors.findById(data.editor_id);
-
-    editor.data = data.text;
-    editor.lang = data.lang;
+    await Editors.findByIdAndUpdate(data.id, {
+      data: data.text,
+      lang: data.lang,
+    });
     return true;
   } catch (err) {
     return false;
