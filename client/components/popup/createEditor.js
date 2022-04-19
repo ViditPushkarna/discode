@@ -24,6 +24,7 @@ export default function createEditor(props) {
             })
             .then((res) => {
                 if (res.data.success) {
+                    setView(false)                    
                     Router.push("/server/" + id + "/editor/" + res.data.editor._id);
                 } else throw res.data.message;
             })

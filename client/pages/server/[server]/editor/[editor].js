@@ -126,7 +126,7 @@ export default function Home() {
 
     document.getElementById('saveEditor').addEventListener('click', () => {
       socket.emit('saveData', {
-        editor_id: ids.editor,
+        id: ids.editor,
         text: monacoRef.current.getValue(),
         lang
       })
@@ -139,26 +139,38 @@ export default function Home() {
     })
 
     socket.on("requestingData", () => {
-      socket.emit('editorChangesSend', monacoRef.current.getValue())
+      socket.emit('editorChangesSend', {
+        id: ids.editor,
+        text: monacoRef.current.getValue(),
+        lang
+      })
     })
 
     socket.on('editorChanges', data => {
-      monacoRef.current.getModel().setValue(data)
+      monacoRef.current.getModel().setValue(data.text)
+      setlang(data.lang)
     })
 
     document.addEventListener('keyup', e => {
       if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Tab' || e.key === 'Delete') {
-        socket.emit('editorChangesSend', monacoRef.current.getValue())
+        socket.emit('editorChangesSend', {
+          id: ids.editor,
+          text: monacoRef.current.getValue(),
+          lang
+        })
       }
     })
 
     document.getElementById('selectlang').addEventListener('change', e => {
       setlang(e.target.value)
-      socket.emit('changeLangSend', e.target.value)
+      socket.emit('changeLangSend', {
+        id: ids.editor,
+        lang
+      })
     })
 
     socket.on('changeLang', data => {
-      setlang(data)
+      setlang(data.lang)
     })
 
     return () => {

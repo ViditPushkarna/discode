@@ -147,10 +147,11 @@ export default function Home() {
     const btn = document.getElementById("btn");
     const inp = document.getElementById("text");
 
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", _e => {
       const user = JSON.parse(localStorage.getItem("user"));
       const input = document.getElementById("text");
-      if (input == "") return;
+      if (input.value === "") return;
+
       socket.emit("create_message", {
         sender_id: user._id,
         message_data: input.value,
@@ -159,12 +160,12 @@ export default function Home() {
       input.value = "";
     });
 
-    inp.addEventListener("keyup", (e) => {
-      // console.log(e);
+    inp.addEventListener("keyup", e => {
       if (e.key !== "Enter") return;
+      
       const user = JSON.parse(localStorage.getItem("user"));
       const input = document.getElementById("text");
-      if (input == "") return;
+      if (input.value === "") return;
 
       socket.emit("create_message", {
         sender_id: user._id,
@@ -182,7 +183,6 @@ export default function Home() {
     } else getInfo();
 
     socket.on("new_message_created", (data) => {
-      // console.log(data);
       setmessages((arr) => {
         return [...arr, data];
       });
@@ -267,7 +267,7 @@ export default function Home() {
         <div className="row2">
           <div className="free"></div>
           <div className="maindiv">
-            <div className="message_container" id="scrollChat">
+            <div id="scrollChat" className="messages_container">
               {messages.map((m) => (
                 <Message
                   key={m.message_id}

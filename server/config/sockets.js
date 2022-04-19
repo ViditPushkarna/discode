@@ -39,6 +39,7 @@ export const iofunc = (io) => {
         .in(ed)
         .fetchSockets()
         .then((data) => {
+          console.log(data.length)
           if (data.length === 0) {
             return fetchDataio(ed);
           } else {
@@ -56,13 +57,11 @@ export const iofunc = (io) => {
     });
 
     socket.on("editorChangesSend", (data) => {
-      io.in(data.editor_id).emit("editorChanges", data);
+      socket.broadcast.to(data.id).emit("editorChanges", data);
     });
 
     socket.on("changeLangSend", (data) => {
-      // console.log(data)
-      // mongo request
-      io.in(data.editor_id).emit("changeLang", data);
+      socket.broadcast.to(data.id).emit("changeLang", data);
     });
 
     socket.on("saveData", (data) => {

@@ -8,12 +8,11 @@ import Router from "next/router"
 export default function Home() {
   const [createServer, setCreateServerPopup] = useState(false);
   const [serverlist, setserverlist] = useState([]);
+  const [newserver, setnewserver] = useState("");
 
   const getServers = () => {
     const token = localStorage.getItem("token");
     if (!token) return Router.push("/signup");
-
-  const [newserver, setnewserver] = useState("");
 
     const user = JSON.parse(localStorage.getItem("user"));
     const req = {
