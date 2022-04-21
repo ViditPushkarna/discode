@@ -132,22 +132,26 @@ export default function Home() {
   useEffect(() => {
     if (ids.server === undefined) return;
 
-    const socket = io("http://localhost:5000/");
+    const socket = io.connect("http://localhost:5000/");
     const user = JSON.parse(localStorage.getItem("user"));
 
     socket.emit("joinChat", {
       channel_id: ids.channel,
       user_id: user._id,
     });
+    socket.on("entered_chat", (data) => {
+      // console.log(data);
+    });
 
     document.addEventListener("deleteMsg", (data) => {
+      // console.log(socket);
       socket.emit("delete_message", data.detail);
     });
 
     const btn = document.getElementById("btn");
     const inp = document.getElementById("text");
 
-    btn.addEventListener("click", _e => {
+    const callbackClick = (_e) => {
       const user = JSON.parse(localStorage.getItem("user"));
       const input = document.getElementById("text");
       if (input.value === "") return;
@@ -158,28 +162,42 @@ export default function Home() {
         channel_id: ids.channel,
       });
       input.value = "";
-    });
+    };
 
-    inp.addEventListener("keyup", e => {
+    const callbackKeyup = (e) => {
       if (e.key !== "Enter") return;
-      
+
       const user = JSON.parse(localStorage.getItem("user"));
       const input = document.getElementById("text");
       if (input.value === "") return;
 
+      // console.log(socket);
+
+      // socket.emit("pohcha?", "yes");
       socket.emit("create_message", {
         sender_id: user._id,
         message_data: input.value,
         channel_id: ids.channel,
       });
       input.value = "";
-    });
+    };
+
+    btn.addEventListener("click", callbackClick);
+
+    inp.addEventListener("keyup", callbackKeyup);
 
     const c = localStorage.getItem("channelList");
     const e = localStorage.getItem("editorList");
-    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
-      setchannellist(c.channelList)
-      seteditorlist(e.editorList)
+    if (
+      c &&
+      c.server === ids.server &&
+      c.channelList &&
+      e &&
+      e.server === ids.server &&
+      e.editorList
+    ) {
+      setchannellist(c.channelList);
+      seteditorlist(e.editorList);
     } else getInfo();
 
     socket.on("new_message_created", (data) => {
@@ -198,6 +216,10 @@ export default function Home() {
     getMessages();
 
     return () => {
+      const tfield = document.getElementById("text");
+      if (tfield) tfield.removeEventListener("keyup", callbackKeyup);
+      const btninp = document.getElementById("btn");
+      if (btninp) btninp.removeEventListener("click", callbackClick);
       socket.disconnect();
     };
   }, [ids]);
@@ -259,7 +281,6 @@ export default function Home() {
             >
               Add+ Editor
             </p>
-
           </div>
           <div className="controller"></div>
         </div>
@@ -289,7 +310,13 @@ export default function Home() {
         <div className="row3">
           <div className="sidestick">
             {serverlist.map((s) => {
-              return <Server key={s.server_id} id={s.server_id} name={s.server_name} />;
+              return (
+                <Server
+                  key={s.server_id}
+                  id={s.server_id}
+                  name={s.server_name}
+                />
+              );
             })}
           </div>
         </div>
