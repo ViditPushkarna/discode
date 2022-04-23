@@ -227,10 +227,7 @@ export default function Home() {
         if (data.result === "sucess") {
           setoutput(data.stdout)
         } else {
-          if (data.stderr) {
-            seterr(data.stderr)
-          }
-
+          seterr(data.build_stderr + '\n' + data.stderr)
           setoutput(data.stdout)
         }
       }
@@ -251,7 +248,7 @@ export default function Home() {
 
     axios.post("http://api.paiza.io:80/runners/create", req).then(res => {
       console.log(res)
-      
+
       const codeid = res.data.id
       if (codeid) getoutput(codeid)
     }).catch(err => {
@@ -362,8 +359,10 @@ export default function Home() {
                     <div className={styles.outputRow}>
                       <h1>output</h1>
                     </div>
-                    <p className={styles.stderr}>{err}</p>
-                    <p className={styles.outputArea}>{output}</p>
+                    <div className={styles.outputArea}>
+                      <p className={styles.stderr}>{err}</p>
+                      <p className={styles.stdout}>{output}</p>
+                    </div>
                   </div>
 
                 </div> : null
