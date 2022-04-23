@@ -146,27 +146,20 @@ export default function Home() {
     socket.emit("joinEditor", ids.editor);
 
     socket.on("joinData", (data) => {
-      // console.log(3);
-      // console.log(data);
       setlang(data.lang);
       monacoRef.current.getModel().setValue(data.text);
     });
 
     socket.on("requestingData", (ed) => {
-      // console.log("aa gya");
       let data = {
         id: ids.editor,
         text: monacoRef.current.getValue(),
         lang: document.getElementById("selectlang").value,
       };
-      // console.log(3);
-      // console.log(data);
       socket.emit("sendingDataForNewUser", data);
     });
 
     socket.on("forNewUser", (data) => {
-      // console.log(4);
-      // console.log(data);
       monacoRef.current.getModel().setValue(data.text);
       setlang(data.lang);
     });
@@ -213,21 +206,16 @@ export default function Home() {
       api_key: "guest"
     }
 
-    console.log(req)
-
     axios.get(`http://api.paiza.io:80/runners/get_details?id=${id}&api_key=guest`).then(res => {
       const data = res.data
 
       if (data) {
-
         if (data.status === "running") return getoutput(id)
-
-        console.log(res)
 
         if (data.result === "sucess") {
           setoutput(data.stdout)
         } else {
-          seterr(data.build_stderr + '\n' + data.stderr)
+          seterr((data.build_stderr ? data.build_stderr + '\n' : "") + (data.stderr ? data.stderr : ""))
           setoutput(data.stdout)
         }
       }
@@ -247,8 +235,6 @@ export default function Home() {
     }
 
     axios.post("http://api.paiza.io:80/runners/create", req).then(res => {
-      console.log(res)
-
       const codeid = res.data.id
       if (codeid) getoutput(codeid)
     }).catch(err => {
@@ -360,8 +346,8 @@ export default function Home() {
                       <h1>output</h1>
                     </div>
                     <div className={styles.outputArea}>
-                      <p className={styles.stderr}>{err}</p>
-                      <p className={styles.stdout}>{output}</p>
+                      {err ? <p className={styles.stderr}>{err}</p> : null}
+                      {output ? <p className={styles.stdout}>{output}</p> : null}
                     </div>
                   </div>
 
