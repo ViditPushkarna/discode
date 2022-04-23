@@ -1,6 +1,7 @@
 import Server from "../model/Server.js";
 import User from "../model/User.js";
 import Channels from "../model/Channel.js";
+import Editors from "../model/Editor.js";
 
 export const home = function (req, res) {
   res.send("Server Controller is Working");
@@ -176,12 +177,22 @@ export const serverInfo = async function (req, res) {
         channel_name: channel.name,
       });
     }
+    var editors = [];
+    for (let eid of server.editors) {
+      let editor = await Editors.findById(eid);
+      editors.push({
+        editor_id: editor._id,
+        editor_name: editor.name,
+      });
+    }
     // server.channels.forEach((chid) => {
     // });
     return res.status(201).send({
       success: true,
       message: `Le bhai tera Server details of ${server.name}`,
+      server_name: server.name,
       channels: channels,
+      editors: editors,
     });
   } catch (err) {
     return res.status(404).send({

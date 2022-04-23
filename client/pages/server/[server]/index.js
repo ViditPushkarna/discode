@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import styles from "../../../styles/Server.module.css";
 import Channel from "../../../components/tiles/channel";
+import Editor from "../../../components/tiles/editor";
 import Server from "../../../components/tiles/server";
-import Message from "../../../components/chat/message";
 import CreateChannel from "../../../components/popup/createChannel";
+import CreateEditor from "../../../components/popup/createEditor";
 import axios from "axios";
 import Router, { useRouter } from "next/router";
 
@@ -12,16 +13,20 @@ export default function Func() {
   const ids = router.query;
 
   const [createChannelPopup, setCreateChannelPopup] = useState(false);
+  const [createEditorPopup, setCreateEditorPopup] = useState(false);
   const [channellist, setchannellist] = useState([]);
+  const [editorlist, seteditorlist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
 
   const getServers = () => {
     const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!user || !token) return Router.push("/signup");
+    
     const req = {
       user_id: user._id,
     };
-
-    const token = localStorage.getItem("token");
 
     axios
       .post("http://localhost:5000/user/userInfo", req, {
@@ -33,7 +38,6 @@ export default function Func() {
         if (res.data.success) {
           localStorage.setItem("serverList", JSON.stringify(res.data.servers));
           setserverlist(res.data.servers);
-          console.log(res.data.servers);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -43,7 +47,7 @@ export default function Func() {
       });
   };
 
-  const getChannels = () => {
+  const getInfo = () => {
     const req = {
       server_id: ids.server,
     };
@@ -57,7 +61,6 @@ export default function Func() {
         },
       })
       .then((res) => {
-        console.log(res);
         if (res.data.success) {
           localStorage.setItem(
             "channelList",
@@ -68,6 +71,16 @@ export default function Func() {
           );
 
           setchannellist(res.data.channels);
+
+          localStorage.setItem(
+            "editorList",
+            JSON.stringify({
+              server: ids.server,
+              editorList: res.data.editors,
+            })
+          );
+
+          seteditorlist(res.data.editors);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -90,13 +103,17 @@ export default function Func() {
     const c = localStorage.getItem("channelList");
     if (c && c.server === ids.server && c.channelList)
       setchannellist(c.channelList);
-    else getChannels();
+    else getInfo();
   }, [ids]);
 
   return (
     <>
       {createChannelPopup ? (
         <CreateChannel id={ids.server} setView={setCreateChannelPopup} />
+      ) : null}
+
+      {createEditorPopup ? (
+        <CreateEditor id={ids.server} setView={setCreateEditorPopup} />
       ) : null}
 
       <div className="page">
@@ -116,7 +133,27 @@ export default function Func() {
               className={styles.addChannel}
               onClick={() => setCreateChannelPopup(true)}
             >
-              Add+
+              Add+ Channel
+            </p>
+
+            <br />
+
+            {editorlist.map((ch) => {
+              return (
+                <Editor
+                  key={ch.editor_id}
+                  id={ch.editor_id}
+                  name={ch.editor_name}
+                  server={ids.server}
+                />
+              );
+            })}
+
+            <p
+              className={styles.addChannel}
+              onClick={() => setCreateEditorPopup(true)}
+            >
+              Add+ Editor
             </p>
           </div>
           <div className="controller"></div>
@@ -129,7 +166,7 @@ export default function Func() {
         <div className="row3">
           <div className="sidestick">
             {serverlist.map((s) => {
-              return <Server id={s.server_id} name={s.server_name} />;
+              return <Server key={s.server_id} id={s.server_id} name={s.server_name} />;
             })}
           </div>
         </div>

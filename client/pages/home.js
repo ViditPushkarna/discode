@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
-import styles from "../styles/Home.module.css";
-import Channel from "../components/tiles/channel";
-import CreateServerPopup from "../components/popUp/createServer";
-import Member from "../components/tiles/member";
-import Server from "../components/tiles/server";
-import axios from "axios";
-import Router from "next/router";
+import { useState, useEffect } from "react"
+import styles from "../styles/Home.module.css"
+import CreateServerPopup from "../components/popUp/createServer"
+import Server from "../components/tiles/server"
+import axios from "axios"
+import Router from "next/router"
 
 export default function Home() {
   const [createServer, setCreateServerPopup] = useState(false);
@@ -13,12 +11,13 @@ export default function Home() {
   const [newserver, setnewserver] = useState("");
 
   const getServers = () => {
+    const token = localStorage.getItem("token");
+    if (!token) return Router.push("/signup");
+
     const user = JSON.parse(localStorage.getItem("user"));
     const req = {
       user_id: user._id,
     };
-
-    const token = localStorage.getItem("token");
 
     axios
       .post("http://localhost:5000/user/userInfo", req, {
