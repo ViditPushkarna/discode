@@ -113,74 +113,99 @@ export default function Home() {
 
   const handleEditorDidMount = (editor, monaco) => {
     monacoRef.current = editor;
-    setMounted(true)
-  }
+    setMounted(true);
+  };
 
   useEffect(() => {
-    if (!mount || ids.server === undefined) return
+    if (!mount || ids.server === undefined) return;
 
     const c = localStorage.getItem("channelList");
     const e = localStorage.getItem("editorList");
-    if (c && c.server === ids.server && c.channelList && e && e.server === ids.server && e.editorList) {
-      setchannellist(c.channelList)
-      seteditorlist(e.editorList)
+    if (
+      c &&
+      c.server === ids.server &&
+      c.channelList &&
+      e &&
+      e.server === ids.server &&
+      e.editorList
+    ) {
+      setchannellist(c.channelList);
+      seteditorlist(e.editorList);
     } else getInfo();
 
     const socket = io("http://localhost:5000/");
 
-    document.getElementById('saveEditor').addEventListener('click', () => {
-      socket.emit('saveData', {
+    document.getElementById("saveEditor").addEventListener("click", () => {
+      socket.emit("saveData", {
         id: ids.editor,
         text: monacoRef.current.getValue(),
-        lang
-      })
-    })
+        lang: document.getElementById("selectlang").value,
+      });
+    });
 
     socket.emit("joinEditor", ids.editor);
-    socket.on("joinData", data => {
-      setlang(data.lang)
-      monacoRef.current.getModel().setValue(data.text)
-    })
 
-    socket.on("requestingData", () => {
-      socket.emit('editorChangesSend', {
+    socket.on("joinData", (data) => {
+      // console.log(3);
+      // console.log(data);
+      setlang(data.lang);
+      monacoRef.current.getModel().setValue(data.text);
+    });
+
+    socket.on("requestingData", (ed) => {
+      // console.log("aa gya");
+      let data = {
         id: ids.editor,
         text: monacoRef.current.getValue(),
-        lang
-      })
-    })
+        lang: document.getElementById("selectlang").value,
+      };
+      // console.log(3);
+      // console.log(data);
+      socket.emit("sendingDataForNewUser", data);
+    });
 
-    socket.on('editorChanges', data => {
-      monacoRef.current.getModel().setValue(data.text)
-      setlang(data.lang)
-    })
+    socket.on("forNewUser", (data) => {
+      // console.log(4);
+      // console.log(data);
+      monacoRef.current.getModel().setValue(data.text);
+      setlang(data.lang);
+    });
 
-    document.addEventListener('keyup', e => {
-      if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Tab' || e.key === 'Delete') {
-        socket.emit('editorChangesSend', {
+    document.addEventListener("keyup", (e) => {
+      if (
+        e.key.length === 1 ||
+        e.key === "Enter" ||
+        e.key === "Backspace" ||
+        e.key === "Tab" ||
+        e.key === "Delete"
+      ) {
+        socket.emit("editorTextChange", {
           id: ids.editor,
           text: monacoRef.current.getValue(),
-          lang
-        })
+        });
       }
-    })
+    });
 
-    document.getElementById('selectlang').addEventListener('change', e => {
-      setlang(e.target.value)
-      socket.emit('changeLangSend', {
+    socket.on("editorTextChanged", (data) => {
+      monacoRef.current.getModel().setValue(data);
+    });
+
+    document.getElementById("selectlang").addEventListener("change", (e) => {
+      setlang(e.target.value);
+      socket.emit("changeLangSend", {
         id: ids.editor,
-        lang
-      })
-    })
+        lang: document.getElementById("selectlang").value,
+      });
+    });
 
-    socket.on('changeLang', data => {
-      setlang(data.lang)
-    })
+    socket.on("changeLang", (data) => {
+      setlang(data);
+    });
 
     return () => {
       socket.disconnect();
     };
-  }, [mount, ids])
+  }, [mount, ids]);
 
   const getoutput = id => {
     const req = {
@@ -348,7 +373,13 @@ export default function Home() {
         <div className="row3">
           <div className="sidestick">
             {serverlist.map((s) => {
-              return <Server key={s.server_id} id={s.server_id} name={s.server_name} />;
+              return (
+                <Server
+                  key={s.server_id}
+                  id={s.server_id}
+                  name={s.server_name}
+                />
+              );
             })}
           </div>
         </div>

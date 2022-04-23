@@ -9,13 +9,17 @@ export const iofunc = (io) => {
     console.log(`User Connected : ${socket.id}`);
 
     socket.on("joinChat", (data) => {
+      // console.log("entered channel", data.channel_id);
       socket.join(data.channel_id);
+      io.sockets.in(data.channel_id).emit("entered_chat", data);
+      // socket.emit("entered_chat", data.channel_id);
     });
 
     socket.on("create_message", (msg) => {
+      // console.log(msg);
       createMessageio(msg)
         .then((data) => {
-          io.in(msg.channel_id).emit("new_message_created", data);
+          io.sockets.in(msg.channel_id).emit("new_message_created", data);
         })
         .catch((err) => {
           console.log(err);
@@ -26,46 +30,57 @@ export const iofunc = (io) => {
       deleteMessageio(msg)
         .then((data) => {
           // console.log(data);
-          io.in(data.channel_id).emit("message_deleted", data.msg);
+          io.sockets.in(data.channel_id).emit("message_deleted", data.msg);
         })
         .catch((err) => {
           console.log(err);
         });
     });
 
+    // editor code starts
+
     socket.on("joinEditor", (ed) => {
-      socket.join(ed);
       io.sockets
         .in(ed)
         .fetchSockets()
         .then((data) => {
-          console.log(data.length)
+          console.log(data.length);
           if (data.length === 0) {
-            return fetchDataio(ed);
+            fetchDataio(ed).then((d) => {
+              socket.emit("joinData", d);
+            });
           } else {
             // this is for computer networks proglm
             // ask from data[0] , data[1]
-            data[0].emit("requestingData", ed);
+            // console.log(data);
+            io.to(data[0].id).emit("requestingData", ed);
           }
         })
         .catch((err) => {
-          return {
+          socket.emit("joinData", {
             text: "",
             lang: "javascript",
-          };
+          });
         });
+      socket.join(ed);
     });
 
-    socket.on("editorChangesSend", (data) => {
-      socket.broadcast.to(data.id).emit("editorChanges", data);
+    socket.on("sendingDataForNewUser", (data) => {
+      socket.broadcast.to(data.id).emit("forNewUser", data);
+    });
+
+    socket.on("editorTextChange", (data) => {
+      socket.broadcast.to(data.id).emit("editorTextChanged", data.text);
     });
 
     socket.on("changeLangSend", (data) => {
-      socket.broadcast.to(data.id).emit("changeLang", data);
+      socket.broadcast.to(data.id).emit("changeLang", data.lang);
     });
 
     socket.on("saveData", (data) => {
-      return saveio(data);
+      saveio(data).then((bul) => {
+        console.log(bul);
+      });
     });
 
     // disconnect
