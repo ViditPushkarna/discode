@@ -1,0 +1,10 @@
+.container:hover {
+    background-color: rgb(9, 9, 22);
+}
+
+.container {
+    width: 15vw;
+    margin: 0vh auto 0 auto;
+    color: azure;
+    cursor: pointer;
+}

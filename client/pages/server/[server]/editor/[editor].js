@@ -119,8 +119,8 @@ export default function Home() {
   useEffect(() => {
     if (!mount || ids.server === undefined) return;
 
-    const c = localStorage.getItem("channelList");
-    const e = localStorage.getItem("editorList");
+    const c = JSON.parse(localStorage.getItem("channelList"));
+    const e = JSON.parse(localStorage.getItem("editorList"));
     if (
       c &&
       c.server === ids.server &&

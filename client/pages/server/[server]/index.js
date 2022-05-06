@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import styles from "../../../styles/Server.module.css";
 import Channel from "../../../components/tiles/channel";
 import Editor from "../../../components/tiles/editor";
+import Voice from "../../../components/tiles/voice";
 import Server from "../../../components/tiles/server";
 import CreateChannel from "../../../components/popup/createChannel";
 import CreateEditor from "../../../components/popup/createEditor";
+import CreateVoice from "../../../components/popup/createVoice";
 import axios from "axios";
 import Router, { useRouter } from "next/router";
 
@@ -14,8 +16,10 @@ export default function Func() {
 
   const [createChannelPopup, setCreateChannelPopup] = useState(false);
   const [createEditorPopup, setCreateEditorPopup] = useState(false);
+  const [createVoicePopup, setCreateVoicePopup] = useState(false);
   const [channellist, setchannellist] = useState([]);
   const [editorlist, seteditorlist] = useState([]);
+  const [voicelist, setvoicelist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
 
   const getServers = () => {
@@ -100,10 +104,21 @@ export default function Func() {
   useEffect(() => {
     if (ids.server === undefined) return;
 
-    const c = localStorage.getItem("channelList");
-    if (c && c.server === ids.server && c.channelList)
-      setchannellist(c.channelList);
-    else getInfo();
+    getInfo()
+
+    // const c = JSON.parse(localStorage.getItem("channelList"));
+    // const e = JSON.parse(localStorage.getItem("editorList"));
+    // if (
+    //   c &&
+    //   c.server === ids.server &&
+    //   c.channelList &&
+    //   e &&
+    //   e.server === ids.server &&
+    //   e.editorList
+    // ) {
+    //   setchannellist(c.channelList);
+    //   seteditorlist(e.editorList);
+    // } else getInfo();
   }, [ids]);
 
   return (
@@ -114,6 +129,10 @@ export default function Func() {
 
       {createEditorPopup ? (
         <CreateEditor id={ids.server} setView={setCreateEditorPopup} />
+      ) : null}
+
+      {createVoicePopup ? (
+        <CreateVoice id={ids.server} setView={setCreateVoicePopup} />
       ) : null}
 
       <div className="page">
@@ -154,6 +173,26 @@ export default function Func() {
               onClick={() => setCreateEditorPopup(true)}
             >
               Add+ Editor
+            </p>
+
+            <br />
+
+            {voicelist.map((ch) => {
+              return (
+                <Voice
+                  key={ch.voice_id}
+                  id={ch.voice_id}
+                  name={ch.voice_name}
+                  server={ids.server}
+                />
+              );
+            })}
+
+            <p
+              className={styles.addChannel}
+              onClick={() => setCreateVoicePopup(true)}
+            >
+              Add+ Voice
             </p>
           </div>
           <div className="controller"></div>
