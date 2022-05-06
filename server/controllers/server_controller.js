@@ -2,6 +2,7 @@ import Server from "../model/Server.js";
 import User from "../model/User.js";
 import Channels from "../model/Channel.js";
 import Editors from "../model/Editor.js";
+import Voices from "../model/Voice.js";
 
 export const home = function (req, res) {
   res.send("Server Controller is Working");
@@ -177,6 +178,14 @@ export const serverInfo = async function (req, res) {
         channel_name: channel.name,
       });
     }
+    var voices = [];
+    for (let vid of server.voices) {
+      let voice = await Voices.findById(vid);
+      voices.push({
+        voice_id: voice._id,
+        voice_name: voice.name,
+      });
+    }
     var editors = [];
     for (let eid of server.editors) {
       let editor = await Editors.findById(eid);
@@ -192,6 +201,7 @@ export const serverInfo = async function (req, res) {
       message: `Le bhai tera Server details of ${server.name}`,
       server_name: server.name,
       channels: channels,
+      voices: voices,
       editors: editors,
     });
   } catch (err) {
