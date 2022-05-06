@@ -1,9 +1,9 @@
-import styles from "../../styles/popup/CreateChannel.module.css";
+import styles from "../../styles/popup/CreateVoice.module.css";
 import { useState } from "react";
 import axios from "axios";
 import Router from "next/router";
 
-export default function createChannel(props) {
+export default function createVoice(props) {
   const { setView, id } = props;
 
   const [name, setName] = useState("");
@@ -18,22 +18,14 @@ export default function createChannel(props) {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/channel/createChannel", req, {
+      .post("http://localhost:5000/voice/createVoice", req, {
         headers: {
           Authorization: token,
         },
       })
       .then((res) => {
         if (res.data.success) {
-          const c = JSON.parse(localStorage.getItem("channelList"));
-          c.channelList.push({
-            channel_id: res.data.channel._id,
-            channel_name: res.data.channel.name,
-          })
-
-          localStorage.setItem('channelList', JSON.stringify(c))
-          setView(false)
-          Router.push("/server/" + id + "/channel/" + res.data.channel._id);
+            setView(false)
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -52,7 +44,7 @@ export default function createChannel(props) {
           onClick={() => setView(false)}
           />
 
-        <h1>Create Channel</h1>
+        <h1>Create Voice</h1>
 
         <input
           className={styles.input}

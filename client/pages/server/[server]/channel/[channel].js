@@ -186,8 +186,9 @@ export default function Home() {
 
     inp.addEventListener("keyup", callbackKeyup);
 
-    const c = localStorage.getItem("channelList");
-    const e = localStorage.getItem("editorList");
+    const c = JSON.parse(localStorage.getItem("channelList"));
+    const e = JSON.parse(localStorage.getItem("editorList"));
+
     if (
       c &&
       c.server === ids.server &&
