@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import styles from "../../../../styles/Server.module.css";
 import Channel from "../../../../components/tiles/channel";
 import Server from "../../../../components/tiles/server";
+import Voice from "../../../../components/tiles/voice";
 import Editor from "../../../../components/tiles/editor";
 import Message from "../../../../components/chat/message";
 import CreateChannel from "../../../../components/popup/createChannel";
+import CreateVoice from "../../../../components/popup/createVoice";
 import CreateEditor from "../../../../components/popup/createEditor";
 import axios from "axios";
 import io from "socket.io-client";
@@ -16,9 +18,11 @@ export default function Home() {
 
   const [createChannelPopup, setCreateChannelPopup] = useState(false);
   const [createEditorPopup, setCreateEditorPopup] = useState(false);
+  const [createVoicePopup, setCreateVoicePopup] = useState(false);
 
   const [channellist, setchannellist] = useState([]);
   const [editorlist, seteditorlist] = useState([]);
+  const [voicelist, setvoicelist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
   const [messages, setmessages] = useState([]);
 
@@ -79,12 +83,11 @@ export default function Home() {
   };
 
   const getInfo = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return Router.push("/signup");
-
     const req = {
       server_id: ids.server,
     };
+
+    const token = localStorage.getItem("token");
 
     axios
       .post("http://localhost:5000/server/serverInfo", req, {
@@ -94,6 +97,8 @@ export default function Home() {
       })
       .then((res) => {
         if (res.data.success) {
+          console.log(res.data)
+
           localStorage.setItem(
             "channelList",
             JSON.stringify({
@@ -113,6 +118,16 @@ export default function Home() {
           );
 
           seteditorlist(res.data.editors);
+
+          localStorage.setItem(
+            "voiceList",
+            JSON.stringify({
+              server: ids.server,
+              voiceList: res.data.voices,
+            })
+          );
+
+          setvoicelist(res.data.voices);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -188,6 +203,7 @@ export default function Home() {
 
     const c = JSON.parse(localStorage.getItem("channelList"));
     const e = JSON.parse(localStorage.getItem("editorList"));
+    const v = JSON.parse(localStorage.getItem("voiceList"));
 
     if (
       c &&
@@ -195,10 +211,14 @@ export default function Home() {
       c.channelList &&
       e &&
       e.server === ids.server &&
-      e.editorList
+      e.editorList &&
+      v &&
+      v.server === ids.server &&
+      v.editorList
     ) {
       setchannellist(c.channelList);
       seteditorlist(e.editorList);
+      setvoicelist(e.voiceList);
     } else getInfo();
 
     socket.on("new_message_created", (data) => {
@@ -239,6 +259,11 @@ export default function Home() {
       {createEditorPopup ? (
         <CreateEditor id={ids.server} setView={setCreateEditorPopup} />
       ) : null}
+
+      {createVoicePopup ? (
+        <CreateVoice id={ids.server} setView={setCreateVoicePopup} />
+      ) : null}
+
       <div className="page">
         <div className="row1">
           <div className="channel">
@@ -281,6 +306,26 @@ export default function Home() {
               onClick={() => setCreateEditorPopup(true)}
             >
               Add+ Editor
+            </p>
+
+            <br />
+
+            {voicelist.map((ch) => {
+              return (
+                <Voice
+                  key={ch.voice_id}
+                  id={ch.voice_id}
+                  name={ch.voice_name}
+                  server={ids.server}
+                />
+              );
+            })}
+
+            <p
+              className={styles.addChannel}
+              onClick={() => setCreateVoicePopup(true)}
+            >
+              Add+ Voice
             </p>
           </div>
           <div className="controller"></div>

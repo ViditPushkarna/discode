@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import styles from "../../../../styles/Editor.module.css";
 import Channel from "../../../../components/tiles/channel";
 import Server from "../../../../components/tiles/server";
+import Voice from "../../../../components/tiles/voice";
 import Editor from "../../../../components/tiles/editor";
 import CreateChannel from "../../../../components/popup/createChannel";
+import CreateVoice from "../../../../components/popup/createVoice";
 import CreateEditor from "../../../../components/popup/createEditor";
 import axios from "axios";
 import io from "socket.io-client";
@@ -18,11 +20,19 @@ export default function Home() {
 
   const [createChannelPopup, setCreateChannelPopup] = useState(false);
   const [createEditorPopup, setCreateEditorPopup] = useState(false);
+  const [createVoicePopup, setCreateVoicePopup] = useState(false);
   const [terminalPopup, setterminalPopup] = useState(false);
 
   const [channellist, setchannellist] = useState([]);
   const [editorlist, seteditorlist] = useState([]);
+  const [voicelist, setvoicelist] = useState([]);
   const [serverlist, setserverlist] = useState([]);
+
+  const [subscriberArr, setSubscriberArr] = useState([true, false, false, false, false])
+  const [publisher, setPublisher] = useState()
+  const [subscriber, setSubscriber] = useState()
+  const [mic, setMic] = useState(false)
+  const [cam, setCam] = useState(false)
 
   const [lang, setlang] = useState('javascript')
   const [mount, setMounted] = useState(false)
@@ -95,6 +105,16 @@ export default function Home() {
           );
 
           seteditorlist(res.data.editors);
+
+          localStorage.setItem(
+            "voiceList",
+            JSON.stringify({
+              server: ids.server,
+              voiceList: res.data.voices,
+            })
+          );
+
+          setvoicelist(res.data.voices);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -103,6 +123,62 @@ export default function Home() {
           Router.push("/signup");
       });
   };
+
+  const joinVoice = async (id) => {
+    if (subscriber !== undefined) return
+
+    const OT = await import('@opentok/client')
+
+    axios.get(`https://ewently-backstage-server.herokuapp.com/data?room=${id}`).then(res => {
+      const creds = {
+        sessionId: res.data.session,
+        token: res.data.token,
+        key: res.data.key,
+      }
+
+      const s = OT.initSession(creds.key, creds.sessionId)
+      setSubscriber(s)
+      const p = OT.initPublisher('voiceBox1', {
+        publishAudio: true,
+        publishVideo: false,
+        name: JSON.parse(localStorage.getItem('user')).name,
+        style: { nameDisplayMode: "on" },
+        insertMode: 'append',
+        showControls: true,
+        width: '100%',
+        height: '100%'
+      })
+      s.on('streamCreated', function (event) {
+        const arr = subscriberArr
+        const index = arr.findIndex(val => val === false)
+        if (index === -1) return
+        arr[index] = event.stream
+        setSubscriberArr(arr)
+        s.subscribe(event.stream, `voiceBox${index + 1}`, {
+          insertMode: 'append',
+          style: { nameDisplayMode: "on" },
+          showControls: true,
+          width: '100%',
+          height: '100%'
+        })
+      })
+      s.on('streamDestroyed', function (event) {
+        const id = event.stream.streamId
+        const arr = subscriberArr
+        const index = arr.findIndex(val => val.streamId === id)
+        arr[index] = false
+        setSubscriberArr(arr)
+      })
+      setPublisher(p)
+      s.connect(creds.token, function (err) {
+        if (err) {
+          console.log(err)
+        } else {
+          s.publish(p)
+        }
+      })
+    })
+  }
 
   useEffect(() => {
     const s = JSON.parse(localStorage.getItem("serverList"));
@@ -121,16 +197,22 @@ export default function Home() {
 
     const c = JSON.parse(localStorage.getItem("channelList"));
     const e = JSON.parse(localStorage.getItem("editorList"));
+    const v = JSON.parse(localStorage.getItem("voiceList"));
+
     if (
       c &&
       c.server === ids.server &&
       c.channelList &&
       e &&
       e.server === ids.server &&
-      e.editorList
+      e.editorList &&
+      v &&
+      v.server === ids.server &&
+      v.editorList
     ) {
       setchannellist(c.channelList);
       seteditorlist(e.editorList);
+      setvoicelist(e.voiceList);
     } else getInfo();
 
     const socket = io("http://localhost:5000/");
@@ -201,11 +283,6 @@ export default function Home() {
   }, [mount, ids]);
 
   const getoutput = id => {
-    const req = {
-      id,
-      api_key: "guest"
-    }
-
     axios.get(`http://api.paiza.io:80/runners/get_details?id=${id}&api_key=guest`).then(res => {
       const data = res.data
 
@@ -251,6 +328,11 @@ export default function Home() {
       {createEditorPopup ? (
         <CreateEditor id={ids.server} setView={setCreateEditorPopup} />
       ) : null}
+
+      {createVoicePopup ? (
+        <CreateVoice id={ids.server} setView={setCreateVoicePopup} />
+      ) : null}
+
       <div className="page">
         <div className="row1">
           <div className="channel">
@@ -294,8 +376,51 @@ export default function Home() {
             >
               Add+ Editor
             </p>
+
+            <br />
+
+            {voicelist.map((ch) => {
+              return (
+                <Voice
+                  key={ch.voice_id}
+                  id={ch.voice_id}
+                  name={ch.voice_name}
+                  server={ids.server}
+                  join={joinVoice}
+                />
+              );
+            })}
+
+            <p
+              className={styles.addChannel}
+              onClick={() => setCreateVoicePopup(true)}
+            >
+              Add+ Voice
+            </p>
+
+            <div className="voiceMembers">
+              <div className="voiceBox" id="voiceBox1"></div>
+              <div className="voiceBox" id="voiceBox2"></div>
+              <div className="voiceBox" id="voiceBox3"></div>
+              <div className="voiceBox" id="voiceBox4"></div>
+              <div className="voiceBox" id="voiceBox5"></div>
+            </div>
           </div>
-          <div className="controller"></div>
+
+          <div className="controller">
+            <button onClick={() => {
+              if (subscriber === undefined) return
+              subscriber.disconnect();
+              setSubscriber(undefined)
+              setSubscriberArr([true, false, false, false, false])
+            }}>Stop</button>
+
+            <button onClick={() => {
+              document.getElementById('log').innerHTML = JSON.stringify(subscriberArr.map(e => e === false ? e : true))
+            }}>show</button>
+            
+            <p style={{color: "wheat"}} id="log"></p>
+          </div>
         </div>
 
         <div className="row2">

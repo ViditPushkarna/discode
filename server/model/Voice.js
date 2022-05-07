@@ -11,6 +11,6 @@ const voiceSchema = new mongoose.Schema({
   },
 });
 
-const Voices = mongoose.model("voices", channelSchema);
+const Voices = mongoose.model("voices", voiceSchema);
 
 export default Voices;

@@ -46,6 +46,7 @@ a {
   flex-direction: column;
   background-color: #1f2833;
   height: 70vh;
+  overflow-y: scroll;
   width: 20vw;
 }
 
@@ -71,6 +72,44 @@ a {
   background-color: #18222e;
   height: 90vh;
   width: 75vw;
+}
+
+.voiceMembers {
+  display: flex;
+  flex-direction: column;
+}
+
+.OT_mode-on {
+  display: block !important;
+}
+
+.voiceBox {
+  height: 0;
+}
+
+#voiceBox1 {
+  height: 50px;
+  background-color: red;
+}
+
+#voiceBox2 {
+  height: 50px;
+  background-color: green;
+}
+
+#voiceBox3 {
+  height: 50px;
+  background-color: yellow;
+}
+
+#voiceBox4 {
+  height: 50px;
+  background-color: blue;
+}
+
+#voiceBox5 {
+  height: 50px;
+  background-color: aqua;
 }
 
 .chatBox {

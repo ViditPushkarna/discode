@@ -11,7 +11,7 @@ export default function createVoice(props) {
   const click = (e) => {
     if (e.type === "keyup" && e.key !== "Enter") return;
     const req = {
-      channel_name: name,
+      voice_name: name,
       server_id: id,
     };
 
@@ -25,7 +25,15 @@ export default function createVoice(props) {
       })
       .then((res) => {
         if (res.data.success) {
-            setView(false)
+          const v = JSON.parse(localStorage.getItem("voiceList"));
+          v.voiceList.push({
+            voice_id: res.data.voice._id,
+            voice_name: res.data.voice.name,
+          })
+
+          localStorage.setItem('voiceList', JSON.stringify(v))
+          setView(false)
+          Router.reload()
         } else throw res.data.message;
       })
       .catch((err) => {

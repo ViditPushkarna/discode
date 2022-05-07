@@ -85,6 +85,16 @@ export default function Func() {
           );
 
           seteditorlist(res.data.editors);
+
+          localStorage.setItem(
+            "voiceList",
+            JSON.stringify({
+              server: ids.server,
+              voiceList: res.data.voices,
+            })
+          );
+
+          setvoicelist(res.data.voices);
         } else throw res.data.message;
       })
       .catch((err) => {
@@ -105,20 +115,6 @@ export default function Func() {
     if (ids.server === undefined) return;
 
     getInfo()
-
-    // const c = JSON.parse(localStorage.getItem("channelList"));
-    // const e = JSON.parse(localStorage.getItem("editorList"));
-    // if (
-    //   c &&
-    //   c.server === ids.server &&
-    //   c.channelList &&
-    //   e &&
-    //   e.server === ids.server &&
-    //   e.editorList
-    // ) {
-    //   setchannellist(c.channelList);
-    //   seteditorlist(e.editorList);
-    // } else getInfo();
   }, [ids]);
 
   return (
