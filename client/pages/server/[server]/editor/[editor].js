@@ -30,7 +30,8 @@ export default function Home() {
 
   const [subscriberArr, setSubscriberArr] = useState([true, false, false, false, false])
   const [publisher, setPublisher] = useState()
-  const [subscriber, setSubscriber] = useState()
+  const [session, setSession] = useState()
+  const [joiningVoice, setjoiningVoice] = useState(false)
   const [mic, setMic] = useState(false)
   const [cam, setCam] = useState(false)
 
@@ -125,11 +126,12 @@ export default function Home() {
   };
 
   const joinVoice = async (id) => {
-    if (subscriber !== undefined) return
+    if (session !== undefined || joiningVoice) return
+    setjoiningVoice(true)
 
     const OT = await import('@opentok/client')
 
-    axios.get(`https://ewently-backstage-server.herokuapp.com/data?room=${id}`).then(res => {
+    axios.get(`http://localhost:5000/data?room=${id}`).then(res => {
       const creds = {
         sessionId: res.data.session,
         token: res.data.token,
@@ -137,7 +139,7 @@ export default function Home() {
       }
 
       const s = OT.initSession(creds.key, creds.sessionId)
-      setSubscriber(s)
+      setSession(s)
       const p = OT.initPublisher('voiceBox1', {
         publishAudio: true,
         publishVideo: false,
@@ -148,11 +150,19 @@ export default function Home() {
         width: '100%',
         height: '100%'
       })
+
+      setjoiningVoice(false)
+
       s.on('streamCreated', function (event) {
         const arr = subscriberArr
         const index = arr.findIndex(val => val === false)
         if (index === -1) return
         arr[index] = event.stream
+
+        console.log(index)
+
+        console.log('stream created at : ', index+1)
+
         setSubscriberArr(arr)
         s.subscribe(event.stream, `voiceBox${index + 1}`, {
           insertMode: 'append',
@@ -167,6 +177,9 @@ export default function Home() {
         const arr = subscriberArr
         const index = arr.findIndex(val => val.streamId === id)
         arr[index] = false
+
+        console.log('stream destroyed at : ', index+1)
+
         setSubscriberArr(arr)
       })
       setPublisher(p)
@@ -409,9 +422,13 @@ export default function Home() {
 
           <div className="controller">
             <button onClick={() => {
-              if (subscriber === undefined) return
-              subscriber.disconnect();
-              setSubscriber(undefined)
+              if (session === undefined) return
+
+              publisher.destroy();
+              session.disconnect();
+              
+              setSession(undefined)
+              setPublisher(undefined)
               setSubscriberArr([true, false, false, false, false])
             }}>Stop</button>
 
