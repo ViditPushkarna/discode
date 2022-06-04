@@ -89,27 +89,27 @@ a {
 
 #voiceBox1 {
   height: 50px;
-  background-color: red;
+  /* background-color: red; */
 }
 
 #voiceBox2 {
   height: 50px;
-  background-color: green;
+  /* background-color: green; */
 }
 
 #voiceBox3 {
   height: 50px;
-  background-color: yellow;
+  /* background-color: yellow; */
 }
 
 #voiceBox4 {
   height: 50px;
-  background-color: blue;
+  /* background-color: blue; */
 }
 
 #voiceBox5 {
   height: 50px;
-  background-color: aqua;
+  /* background-color: aqua; */
 }
 
 .chatBox {

@@ -69,6 +69,7 @@ app.get('/data', (req, res) => {
   else
       OT.createSession({ mediaMode: "routed" }, (err, session) => {
           if (err)
+          console.log(err), 
               res.json({ error: true })
           else
               res.json({
