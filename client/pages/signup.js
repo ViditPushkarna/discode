@@ -3,7 +3,9 @@ import styles from "../styles/Login.module.css"
 import axios from "axios"
 import Router from "next/router"
 
-export default function Dashboard() {
+export default function Func(props) {
+  const {config} = props
+
   const [susername, setsusername] = useState("")
   const [semail, setsemail] = useState("")
   const [spassword, setspassword] = useState("")
@@ -21,7 +23,7 @@ export default function Dashboard() {
     }
 
     axios
-      .post("http://localhost:5000/user/createUser", req)
+      .post(`${config.SERVER}/user/createUser`, req)
       .then((res) => {
         if (res.data.success) {
           localStorage.setItem("token", res.data.token)
@@ -49,7 +51,7 @@ export default function Dashboard() {
     const token = localStorage.getItem("token")
 
     axios
-      .post("http://localhost:5000/user/login", req)
+      .post(`${config.SERVER}/user/login`, req)
       .then((res) => {
         if (res.data.success) {
           localStorage.setItem("user", JSON.stringify(res.data.user))

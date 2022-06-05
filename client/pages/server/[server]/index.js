@@ -10,7 +10,9 @@ import CreateVoice from "../../../components/popup/createVoice";
 import axios from "axios";
 import Router, { useRouter } from "next/router";
 
-export default function Func() {
+export default function Func(props) {
+  const {config} = props
+
   const router = useRouter();
   const ids = router.query;
 
@@ -33,7 +35,7 @@ export default function Func() {
     };
 
     axios
-      .post("http://localhost:5000/user/userInfo", req, {
+      .post(`${config.SERVER}/user/userInfo`, req, {
         headers: {
           Authorization: token,
         },
@@ -59,7 +61,7 @@ export default function Func() {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/server/serverInfo", req, {
+      .post(`${config.SERVER}/server/serverInfo`, req, {
         headers: {
           Authorization: token,
         },
