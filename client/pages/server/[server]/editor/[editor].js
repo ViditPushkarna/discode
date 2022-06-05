@@ -14,7 +14,9 @@ import Router, { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
-export default function Home() {
+export default function Home(props) {
+  const {config} = props
+
   const router = useRouter();
   const ids = router.query;
 
@@ -53,7 +55,7 @@ export default function Home() {
     };
 
     axios
-      .post("http://localhost:5000/user/userInfo", req, {
+      .post(`${config.SERVER}/user/userInfo`, req, {
         headers: {
           Authorization: token,
         },
@@ -80,7 +82,7 @@ export default function Home() {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/server/serverInfo", req, {
+      .post(`${config.SERVER}/server/serverInfo`, req, {
         headers: {
           Authorization: token,
         },
@@ -131,7 +133,7 @@ export default function Home() {
 
     const OT = await import('@opentok/client')
 
-    axios.get(`http://localhost:5000/data?room=${id}`).then(res => {
+    axios.get(`${config.SERVER}/data?room=${id}`).then(res => {
       const creds = {
         sessionId: res.data.session,
         token: res.data.token,
@@ -228,7 +230,7 @@ export default function Home() {
       setvoicelist(e.voiceList);
     } else getInfo();
 
-    const socket = io("http://localhost:5000/");
+    const socket = io(`${config.SERVER}/`);
 
     document.getElementById("saveEditor").addEventListener("click", () => {
       socket.emit("saveData", {

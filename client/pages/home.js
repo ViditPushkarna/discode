@@ -5,7 +5,9 @@ import Server from "../components/tiles/server"
 import axios from "axios"
 import Router from "next/router"
 
-export default function Home() {
+export default function Home(props) {
+  const {config} = props
+
   const [createServer, setCreateServerPopup] = useState(false);
   const [serverlist, setserverlist] = useState([]);
   const [newserver, setnewserver] = useState("");
@@ -20,7 +22,7 @@ export default function Home() {
     };
 
     axios
-      .post("http://localhost:5000/user/userInfo", req, {
+      .post(`${config.SERVER}/user/userInfo`, req, {
         headers: {
           Authorization: token,
         },
@@ -48,7 +50,7 @@ export default function Home() {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/server/addMember", req, {
+      .post(`${config.SERVER}/server/addMember`, req, {
         headers: {
           Authorization: token,
         },

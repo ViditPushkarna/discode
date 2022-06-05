@@ -4,7 +4,9 @@ import io from "socket.io-client";
 import dynamic from "next/dynamic";
 const MonacoEditor = dynamic(import("@monaco-editor/react"), { ssr: false });
 
-export default function IndexPage() {
+export default function IndexPage(props) {
+  const {config} = props
+  
   const [lang, setlang] = useState('javascript')
   const [mount, setMounted] = useState(false)
   const monacoRef = useRef(null)
@@ -17,7 +19,7 @@ export default function IndexPage() {
   useEffect(() => {
     if (!mount) return
 
-    const socket = io("http://localhost:5000/");
+    const socket = io(`${config.SERVER}/`);
     socket.emit("joinEditor");
 
     socket.on('editorChanges', data => {

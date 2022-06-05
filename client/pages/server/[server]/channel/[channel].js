@@ -12,7 +12,9 @@ import axios from "axios";
 import io from "socket.io-client";
 import Router, { useRouter } from "next/router";
 
-export default function Home() {
+export default function Home(props) {
+  const {config} = props
+
   const router = useRouter();
   const ids = router.query;
 
@@ -35,7 +37,7 @@ export default function Home() {
     };
 
     axios
-      .post("http://localhost:5000/message/fetchAll", req, {
+      .post(`${config.SERVER}/message/fetchAll`, req, {
         headers: {
           Authorization: token,
         },
@@ -63,7 +65,7 @@ export default function Home() {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/user/userInfo", req, {
+      .post(`${config.SERVER}/user/userInfo`, req, {
         headers: {
           Authorization: token,
         },
@@ -90,7 +92,7 @@ export default function Home() {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/server/serverInfo", req, {
+      .post(`${config.SERVER}/server/serverInfo`, req, {
         headers: {
           Authorization: token,
         },
@@ -147,7 +149,7 @@ export default function Home() {
   useEffect(() => {
     if (ids.server === undefined) return;
 
-    const socket = io.connect("http://localhost:5000/");
+    const socket = io.connect(`${config.SERVER}/`);
     const user = JSON.parse(localStorage.getItem("user"));
 
     socket.emit("joinChat", {
