@@ -122,15 +122,15 @@ export default function Func(props) {
   return (
     <>
       {createChannelPopup ? (
-        <CreateChannel id={ids.server} setView={setCreateChannelPopup} />
+        <CreateChannel id={ids.server} setView={setCreateChannelPopup} config={config} />
       ) : null}
 
       {createEditorPopup ? (
-        <CreateEditor id={ids.server} setView={setCreateEditorPopup} />
+        <CreateEditor id={ids.server} setView={setCreateEditorPopup} config={config} />
       ) : null}
 
       {createVoicePopup ? (
-        <CreateVoice id={ids.server} setView={setCreateVoicePopup} />
+        <CreateVoice id={ids.server} setView={setCreateVoicePopup} config={config} />
       ) : null}
 
       <div className="page">

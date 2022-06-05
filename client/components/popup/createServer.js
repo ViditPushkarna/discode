@@ -4,7 +4,7 @@ import axios from "axios";
 import Router from "next/router";
 
 export default function createServer(props) {
-  const { setView } = props;
+  const { setView, config } = props;
   const [name, setName] = useState("");
 
   const click = e => {
@@ -20,7 +20,7 @@ export default function createServer(props) {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/server/createServer", req, {
+      .post(`${config.SERVER}/server/createServer`, req, {
         headers: {
           Authorization: token,
         },
