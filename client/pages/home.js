@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import styles from "../styles/Home.module.css"
-import CreateServerPopup from "../components/popUp/createServer"
+import CreateServerPopup from "../components/popup/createServer"
 import Server from "../components/tiles/server"
 import axios from "axios"
 import Router from "next/router"
@@ -80,7 +80,7 @@ export default function Home(props) {
   return (
     <>
       {createServer ? (
-        <CreateServerPopup setView={setCreateServerPopup} />
+        <CreateServerPopup setView={setCreateServerPopup} config={config} />
       ) : null}
       <div className="page">
         <div className="row1">

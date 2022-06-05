@@ -4,7 +4,7 @@ import axios from "axios";
 import Router from "next/router";
 
 export default function createEditor(props) {
-    const { setView, id } = props;
+    const { setView, id, config } = props;
     const [name, setName] = useState("");
 
     const click = (e) => {
@@ -17,7 +17,7 @@ export default function createEditor(props) {
         const token = localStorage.getItem("token");
 
         axios
-            .post("http://localhost:5000/editor/createEditor", req, {
+            .post(`${config.SERVER}/editor/createEditor`, req, {
                 headers: {
                     Authorization: token,
                 },

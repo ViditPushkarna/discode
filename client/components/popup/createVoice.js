@@ -4,7 +4,7 @@ import axios from "axios";
 import Router from "next/router";
 
 export default function createVoice(props) {
-  const { setView, id } = props;
+  const { setView, id, config } = props;
 
   const [name, setName] = useState("");
 
@@ -18,7 +18,7 @@ export default function createVoice(props) {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/voice/createVoice", req, {
+      .post(`${config.SERVER}/voice/createVoice`, req, {
         headers: {
           Authorization: token,
         },

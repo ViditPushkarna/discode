@@ -4,7 +4,7 @@ import axios from "axios";
 import Router from "next/router";
 
 export default function createChannel(props) {
-  const { setView, id } = props;
+  const { setView, id, config } = props;
 
   const [name, setName] = useState("");
 
@@ -18,7 +18,7 @@ export default function createChannel(props) {
     const token = localStorage.getItem("token");
 
     axios
-      .post("http://localhost:5000/channel/createChannel", req, {
+      .post(`${config.SERVER}/channel/createChannel`, req, {
         headers: {
           Authorization: token,
         },
