@@ -298,7 +298,7 @@ export default function Home(props) {
   }, [mount, ids]);
 
   const getoutput = id => {
-    axios.get(`http://api.paiza.io:80/runners/get_details?id=${id}&api_key=guest`).then(res => {
+    axios.post(`${config.SERVER_EDITOR}/status`, {id}).then(res => {
       const data = res.data
 
       if (data) {
@@ -326,7 +326,7 @@ export default function Home(props) {
       api_key: "guest"
     }
 
-    axios.post("http://api.paiza.io:80/runners/create", req).then(res => {
+    axios.post(`${config.SERVER_EDITOR}/`, req).then(res => {
       const codeid = res.data.id
       if (codeid) getoutput(codeid)
     }).catch(err => {

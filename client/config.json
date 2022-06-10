@@ -1,3 +1,4 @@
 {
-    "SERVER" : "http://localhost:5000"
+    "SERVER" : "https://fathomless-springs-09484.herokuapp.com",
+    "SERVER_EDITOR": "https://immense-beyond-04937.herokuapp.com"
 }
