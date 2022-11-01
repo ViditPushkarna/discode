@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import {
+  login,
   selectPassword,
   selectToken,
   selectUsername,
@@ -8,10 +9,20 @@ import {
   setUsername,
 } from "../redux/authSlice";
 
-export default function Login() {
+export default function Login({ navigation: { replace } }) {
   const dispatch = useDispatch();
   const username = useSelector(selectUsername);
   const password = useSelector(selectPassword);
+  const token = useSelector(selectToken);
+  const performLogin = async () => {
+    console.log("hi 2");
+    const blean = await dispatch(login(password, username));
+    if (blean === true) {
+      console.log(token);
+      replace("Home");
+    }
+    console.log("hi 3");
+  };
   return (
     <View style={styles.page}>
       <Text style={styles.text}>Hello this is login</Text>
@@ -31,7 +42,12 @@ export default function Login() {
           onChangeText={(value) => dispatch(setPassword(value))}
         />
       </View>
-      <Pressable style={styles.submit}>
+      <Pressable
+        style={styles.submit}
+        onPress={() => {
+          performLogin();
+        }}
+      >
         <Text style={styles.text}>Submit</Text>
       </Pressable>
     </View>

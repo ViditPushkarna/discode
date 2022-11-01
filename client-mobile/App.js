@@ -29,7 +29,14 @@ function App() {
   const token = useSelector(selectToken);
   return (
     // <Text>{token} hello</Text>
-    <NavigationContainer>{token ? AppStack : AuthStack}</NavigationContainer>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Brand" component={Brand} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Signup" component={Signup} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
